@@ -11,7 +11,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.Utils.PID;
 
-public class Elevator {
+public class
+Elevator {
     private static DcMotor leftMotor;
     private static DcMotor rightMotor;
 

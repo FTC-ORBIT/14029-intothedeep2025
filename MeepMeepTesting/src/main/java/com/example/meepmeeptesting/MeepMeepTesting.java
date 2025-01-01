@@ -133,7 +133,7 @@ public class MeepMeepTesting {
                 .strafeToLinearHeading(blueBasket.position,blueBasket.heading)
                 .build());
 
-        meepMeep.setBackground(MeepMeep.Background.FIELD_INTO_THE_DEEP_JUICE_DARK)
+        meepMeep.setBackground(field-2024-juice-dark.png)
                 .setDarkMode(true)
                 .setBackgroundAlpha(0.95f)
                 // Add both of our declared bot entities
