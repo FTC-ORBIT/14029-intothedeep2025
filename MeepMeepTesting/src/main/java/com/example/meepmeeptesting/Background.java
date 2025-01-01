@@ -1,2 +1,6 @@
-package com.example.meepmeeptesting;public class Background {
+package com.example.meepmeeptesting;
+
+import com.noahbres.meepmeep.MeepMeep;
+
+public class Background  {
 }
