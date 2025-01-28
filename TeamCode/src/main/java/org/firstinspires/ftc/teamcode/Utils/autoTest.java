@@ -61,7 +61,6 @@ public class autoTest extends LinearOpMode {
                 flag = true;
             }
 
-
 //        start = System.currentTimeMillis();
 //        while(System.currentTimeMillis()-start<100){
 //            Drivetrain.driveByTime(0.1);
