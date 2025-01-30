@@ -21,8 +21,8 @@ public class Wrist {
                 rightWristServo.setPosition(0.96);
                 break;
             case INTAKE:
-                leftWristServo.setPosition(0.74);
-                rightWristServo.setPosition(0.25);
+                leftWristServo.setPosition(0.68);
+                rightWristServo.setPosition(0.28);
                 break;
             case DEPLETE:
                 leftWristServo.setPosition(0.67);

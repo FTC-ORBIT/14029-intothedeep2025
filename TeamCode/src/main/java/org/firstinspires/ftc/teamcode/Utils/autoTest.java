@@ -5,6 +5,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.robotSubSystems.Drivetrain.Drivetrain;
+import org.firstinspires.ftc.teamcode.robotSubSystems.ElevatorHorizontical.ElevatorHorizontical;
+import org.firstinspires.ftc.teamcode.robotSubSystems.ElevatorHorizontical.ElevatorHorizonticalState;
 import org.firstinspires.ftc.teamcode.robotSubSystems.ElevatorVertical.ElevatorVertical;
 import org.firstinspires.ftc.teamcode.robotSubSystems.ElevatorVertical.ElevatorVerticalState;
 
@@ -12,6 +14,7 @@ import org.firstinspires.ftc.teamcode.robotSubSystems.ElevatorVertical.ElevatorV
 public class autoTest extends LinearOpMode {
 
     final double robotCenterToArm = 10;
+    ElevatorHorizonticalState elevatorHorizonticalState = ElevatorHorizonticalState.ALMOST;
     Pose2d blueBasket = new Pose2d(64 - robotCenterToArm/Math.sqrt(2), 64 - robotCenterToArm/Math.sqrt(2),Math.toRadians(45));
     Pose2d redBasket = new Pose2d(-64 + robotCenterToArm/Math.sqrt(2), -64 + robotCenterToArm/Math.sqrt(2),Math.toRadians(225));
     Pose2d blueRobot2StartPosition = new Pose2d(-23.5, 64,Math.toRadians(270)).times(new Pose2d(0,0,Math.PI*2));
@@ -35,6 +38,7 @@ public class autoTest extends LinearOpMode {
     public void runOpMode() {
         Drivetrain.init(hardwareMap);
         ElevatorVertical.init(hardwareMap);
+        ElevatorHorizontical.init(hardwareMap);
         ElevatorVerticalState elevatorState = ElevatorVerticalState.INTAKE;
 
         waitForStart();
@@ -53,9 +57,11 @@ public class autoTest extends LinearOpMode {
                     ElevatorVertical.operate(elevatorState, 0, 0);
 
                 }
-                if (System.currentTimeMillis() - start > 1700 && System.currentTimeMillis() - start < 1800) {
-                    elevatorState = ElevatorVerticalState.SPECIMEN;
+                if (System.currentTimeMillis() - start > 1700 && System.currentTimeMillis() - start < 2200) {
+                    elevatorState = ElevatorVerticalState.INTAKE;
+                    elevatorHorizonticalState = ElevatorHorizonticalState.HALF;
                     ElevatorVertical.operate(elevatorState, 0, 0);
+                    ElevatorHorizontical.opreate(elevatorHorizonticalState,0);
                 }
 
                 flag = true;

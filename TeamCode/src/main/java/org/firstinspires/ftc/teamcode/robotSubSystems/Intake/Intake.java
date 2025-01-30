@@ -21,7 +21,7 @@ public class Intake {
         switch (state) {
             case IN:
                 leftIntakeServo.setPosition(1);
-                rightIntakeServo.setPosition(-1);
+                rightIntakeServo.setPosition(-0.98);
                 break;
             case OFF:
                 leftIntakeServo.setPosition(0.5);

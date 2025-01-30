@@ -59,10 +59,11 @@ public class ElevatorVertical {
                 wantedPos += (int) gamepadVal * 25;
             }
              */
-//            if(wantedPos > 2235) { wantedPos = 2235; } else if(wantedPos < 0) { wantedPos = 0; }
+/*            if(wantedPos > 2235) { wantedPos = 2235; } else if(wantedPos < 0) { wantedPos = 0; }
             if (secondGamepadVal == 0) {
                 wantedPos = limiter(wantedPos, 0, ElevatorVerticalConstants.MAX_OPEN_POS);
             }
+ */
             changeLevelPID.setWanted(wantedPos);
             power = changeLevelPID.update(getElevatorPos());
 

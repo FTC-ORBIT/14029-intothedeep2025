@@ -107,7 +107,7 @@ public class TeleOp14029 extends OpMode {
         if (gamepad1.back) {Gyro.resetGyro();}
 
         //TODO: add encoder limiters for horizontal
-        ElevatorHorizontical.opreate(elevatorHorizonticalState,gamepad1.right_stick_x,telemetry);
+        ElevatorHorizontical.opreate(elevatorHorizonticalState,gamepad1.right_stick_x);
         ElevatorVertical.operate( elevatorState, -gamepad1.right_stick_y, -gamepad2.right_stick_y);
         Intake.operate(intakeState);
         Arm.operate(armState);

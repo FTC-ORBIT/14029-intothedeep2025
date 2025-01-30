@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.robotSubSystems.ElevatorHorizontical;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Utils.PID;
 
 public class ElevatorHorizontical {
@@ -18,7 +17,7 @@ public class ElevatorHorizontical {
         elevatorMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
-    public static void opreate(ElevatorHorizonticalState elevatorHorizonticalState, float rightJoyStick, Telemetry telemetry){
+    public static void opreate(ElevatorHorizonticalState elevatorHorizonticalState, float rightJoyStick){
                 switch(elevatorHorizonticalState){
                     case OPEN:
                         wantedPos = ElevatorHorizonticalConstants.openPos;
