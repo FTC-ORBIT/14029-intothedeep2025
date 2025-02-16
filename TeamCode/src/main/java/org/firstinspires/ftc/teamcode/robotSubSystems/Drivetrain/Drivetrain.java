@@ -108,4 +108,143 @@ public class Drivetrain {
         telemetry.addData("prep",dtMotors[3]);
     }
 
+
+    /*
+    public static void moveRobot(Pose2D wanted, Telemetry telemetry) {
+//        wanted.vector.rotate(Angle.wrapAngle0_360(Gyro.getAngle()));
+
+
+        final double lfWanted = wanted.getY() + wanted.getX();
+        final double rfWanted = wanted.getY() - wanted.getX();
+
+        double lfCurrent = 0;
+        double rfCurrent = 0;
+
+
+//        turn robot pid
+
+        turnRobotPID.setWanted(wanted.getAngle());
+
+        double rotationPower = turnRobotPID.update(-Gyro.getAngle());
+
+        telemetry.addData("power", lfPower);
+        telemetry.addData("posY", PoseTracker.getPose().getY());
+        telemetry.addData("posX", PoseTracker.getPose().getX());
+
+        boolean isFinishedTurning = false;
+        boolean isFinishedLf = false;
+        boolean isFinishedRf = false;
+
+
+//        if (wanted.getY() != 0 || wanted.getX() != 0){
+//            dtMotors[0].setPower(lfPower);
+//            dtMotors[1].setPower(rfPower);
+//            dtMotors[2].setPower(rfPower * 0.9);
+//            dtMotors[3].setPower(lfPower * 0.9);
+
+        if (wanted.getY() == 0 && wanted.getX() == 0) {
+            rotationPower = Math.max(0.15, Math.abs(rotationPower)) * Math.signum(rotationPower);
+
+            isFinishedLf = true;
+            isFinishedRf = true;
+            lfPower = 0;
+            rfPower = 0;
+
+            dtMotors[0].setPower(lfPower + rotationPower);
+            dtMotors[1].setPower(rfPower + rotationPower);
+            dtMotors[2].setPower(rfPower - rotationPower);
+            dtMotors[3].setPower(lfPower - rotationPower);
+
+            isFinishedTurning = (Math.abs(wanted.getAngle()) - 0.25 < Math.abs(-Gyro.getAngle()) && Math.abs(-Gyro.getAngle()) < Math.abs(wanted.getAngle()) + 0.25) && (Math.signum(wanted.getAngle()) == Math.signum(-Gyro.getAngle()) || wanted.getAngle() == 0);
+
+        } else {
+
+            if (wanted.getX() == 0) {
+
+                moveRobotPID = new PID(DrivetrainConstants.moveRobotKp, DrivetrainConstants.moveRobotKi, DrivetrainConstants.moveRobotKd, DrivetrainConstants.moveRobotKf, DrivetrainConstants.moveRobotIzone, DrivetrainConstants.moveRobotMaxSpeed, DrivetrainConstants.moveRobotMinSpeed);
+
+                lfCurrent = PoseTracker.getPose().getY();
+                rfCurrent = PoseTracker.getPose().getY();
+
+
+                final double lfError = lfWanted - lfCurrent;
+                final double rfError = rfWanted - rfCurrent;
+
+
+                if (lfError > rfError) {
+                    moveRobotPID.setWanted(lfWanted);
+                    lfPower = moveRobotPID.update(lfCurrent);
+                    rfPower = (rfError / lfError) * lfPower;
+                } else {
+                    moveRobotPID.setWanted(rfWanted);
+                    rfPower = moveRobotPID.update(rfCurrent);
+                    lfPower = (lfError / rfError) * rfPower;
+                }
+                isFinishedLf = Math.abs(lfWanted) < Math.abs(lfCurrent);
+                isFinishedRf = Math.abs(rfWanted) < Math.abs(rfCurrent);
+
+                dtMotors[0].setPower(lfPower + rotationPower);
+                dtMotors[1].setPower(rfPower + rotationPower);
+                dtMotors[2].setPower(rfPower - rotationPower);
+                dtMotors[3].setPower(lfPower - rotationPower);
+
+            } else {
+
+                moveRobotPID = new PID(DrivetrainConstants.moveRobotSideKp, DrivetrainConstants.moveRobotSideKi, DrivetrainConstants.moveRobotSideKd, DrivetrainConstants.moveRobotSideKf, DrivetrainConstants.moveRobotSideIzone, DrivetrainConstants.moveRobotSideMaxSpeed, DrivetrainConstants.moveRobotSideMinSpeed);
+
+                lfCurrent = +PoseTracker.getPose().getX();
+                rfCurrent = -PoseTracker.getPose().getX();
+
+
+                final double lfError = lfWanted - lfCurrent;
+                final double rfError = rfWanted - rfCurrent;
+
+
+                moveRobotPID.setWanted(lfWanted);
+                lfPower = moveRobotPID.update(lfCurrent);
+                rfPower = -lfPower;
+
+
+//                lfCurrent =  + PoseTracker.getPose().getX();
+//                rfCurrent =  - PoseTracker.getPose().getX();
+
+                isFinishedLf = Math.abs(lfWanted) < Math.abs(lfCurrent) ;
+                isFinishedRf = Math.abs(rfWanted)  < Math.abs(rfCurrent);
+
+                dtMotors[0].setPower((lfPower + rotationPower) * 1.3);
+                dtMotors[1].setPower(rfPower + rotationPower);
+                dtMotors[2].setPower((rfPower - rotationPower) * 1.3);
+                dtMotors[3].setPower(lfPower - rotationPower);
+            }
+
+            isFinishedTurning = true;
+
+        }
+
+
+        PoseTracker.update();
+//        }else {
+
+        telemetry.addData("angle", Gyro.getAngle());
+        telemetry.addData("wanted", wanted.getAngle());
+//        }
+
+
+
+
+        isFinished = isFinishedLf && isFinishedRf && isFinishedTurning;
+        if (isFinished) {
+            breakMotors();
+            resetEncoders();
+            PoseTracker.resetPos();
+        }
+
+    }
+
+     */
+
+
+
+
+
 }

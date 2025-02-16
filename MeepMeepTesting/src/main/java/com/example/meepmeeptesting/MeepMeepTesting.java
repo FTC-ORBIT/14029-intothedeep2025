@@ -1,7 +1,6 @@
 package com.example.meepmeeptesting;
 
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.Vector2d;
 import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeBlueDark;
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeBlueLight;
@@ -23,7 +22,7 @@ public class MeepMeepTesting {
         Pose2d blueRobot2StartPosition = RotatedPose2d.rotate90deg(new Pose2d(-23.5, 64,Math.toRadians(270)).times(new Pose2d(0,0,Math.PI*2)));
         Pose2d blueRobot1StartPosition = RotatedPose2d.rotate90deg(new Pose2d(23.5, 64,Math.toRadians(270)));
         Pose2d redRobot1StartPosition = RotatedPose2d.rotate90deg(new Pose2d(-23.5,-64,Math.toRadians(90)));
-        Pose2d redRobot2StartPosition = RotatedPose2d.rotate90deg(new Pose2d(23.5,-64,Math.toRadians(90)));
+        Pose2d redRobot2StartPosition = RotatedPose2d.rotate90deg(new Pose2d(-37,-64,Math.toRadians(90)));
         Pose2d blueGamePiece1 = RotatedPose2d.rotate90deg(new Pose2d(-48 + robotCenterToArm, 26,Math.toRadians(180)));
         Pose2d blueGamePiece2 = RotatedPose2d.rotate90deg(new Pose2d(-58 + robotCenterToArm, 26,Math.toRadians(180)));
         Pose2d blueGamePiece3 = RotatedPose2d.rotate90deg(new Pose2d(-68 + robotCenterToArm, 26,Math.toRadians(180)));
@@ -75,7 +74,7 @@ public class MeepMeepTesting {
 
         blue2Bot.runAction(blue2Bot.getDrive().actionBuilder(blueRobot2StartPosition)
 //                .strafeToLinearHeading(basket.position,basket.heading)
-                .splineToLinearHeading(blueBasket, Math.toRadians(22.5-90))
+                .splineToLinearHeading(blueBasket, blueBasket.heading.toDouble()-Math.toRadians(22.5))
                 .strafeToLinearHeading(blueGamePiece1.position,blueGamePiece1.heading)
                 .strafeToLinearHeading(blueBasket.position,blueBasket.heading)
                 .strafeToLinearHeading(blueGamePiece2.position,blueGamePiece2.heading)
@@ -91,7 +90,7 @@ public class MeepMeepTesting {
                 .build();
 
         red2Bot.runAction(red2Bot.getDrive().actionBuilder(redRobot2StartPosition)
-                .splineToLinearHeading(redBasket, Math.toRadians(22.5-180-90))
+                .splineToLinearHeading(redBasket, redBasket.heading.toDouble()-Math.toRadians(22.5))
                 .strafeToLinearHeading(redGamePiece3.position,redGamePiece3.heading)
                 .strafeToLinearHeading(redBasket.position,redBasket.heading)
                 .strafeToLinearHeading(redGamePiece2.position,redGamePiece2.heading)
@@ -124,7 +123,7 @@ public class MeepMeepTesting {
 
         blue3Bot.runAction(blue3Bot.getDrive().actionBuilder(blueRobot2StartPosition)
 //                .strafeToLinearHeading(basket.position,basket.heading)
-                .splineToLinearHeading(blueBasket, Math.toRadians(22.5-90))
+                .splineToLinearHeading(blueBasket, blueBasket.heading.toDouble()-Math.toRadians(22.5))
                 .strafeToLinearHeading(yellow1GamePiece1.position,yellow1GamePiece1.heading)
                 .strafeToLinearHeading(blueBasket.position,blueBasket.heading)
                 .strafeToLinearHeading(yellow1GamePiece2.position,yellow1GamePiece2.heading)

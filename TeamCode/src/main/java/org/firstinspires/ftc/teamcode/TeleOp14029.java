@@ -94,7 +94,7 @@ public class TeleOp14029 extends OpMode {
         }
         //general----------------------------------------------------------------------------
         if (gamepad1.right_bumper) {elevatorHorizonticalState = ElevatorHorizonticalState.HALF; wristState = WristState.INTAKE; intakeState = IntakeState.IN;}
-        if (gamepad1.left_bumper) {wristState = WristState.TRANSFER; intakeState = IntakeState.OFF;}
+        //if (gamepad1.left_bumper) {wristState = WristState.TRANSFER; intakeState = IntakeState.OFF; elevatorHorizonticalState = ElevatorHorizonticalState.ALMOST;}
 
         if (gamepad1.right_stick_button) {intakeState = IntakeState.OUT;}
         if (gamepad1.left_stick_button) {intakeState = IntakeState.OFF;}
