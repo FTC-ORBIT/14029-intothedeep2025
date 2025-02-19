@@ -20,8 +20,17 @@ import org.firstinspires.ftc.teamcode.robotSubSystems.ElevatorVertical.ElevatorV
 import org.firstinspires.ftc.teamcode.robotSubSystems.ElevatorVertical.ElevatorVerticalConstants;
 import org.firstinspires.ftc.teamcode.robotSubSystems.ElevatorVertical.ElevatorVerticalState;
 
+
+
 @Autonomous(name = "test")
 public class Test extends LinearOpMode {
+    public boolean isUp = true;
+    final double robotCenterToArm = 10;
+    Pose2d redBasket = RotatedPose2d.rotate90deg(new Pose2d(-64 + robotCenterToArm/Math.sqrt(2), -64 + robotCenterToArm/Math.sqrt(2),Math.toRadians(225)));
+    Pose2d yellow2GamePiece1 = RotatedPose2d.rotate90deg(new Pose2d(-68, -26 - robotCenterToArm,Math.toRadians(90)));
+    Pose2d yellow2GamePiece2 = RotatedPose2d.rotate90deg(new Pose2d(-58, -26 - robotCenterToArm,Math.toRadians(90)));
+    Pose2d yellow2GamePiece3 = RotatedPose2d.rotate90deg(new Pose2d(-48, -26 - robotCenterToArm,Math.toRadians(90)));
+    Pose2d[] samples = {yellow2GamePiece3,yellow2GamePiece2,yellow2GamePiece1};
     @Override
     public void runOpMode() throws InterruptedException {
         MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0,0,0));
@@ -30,15 +39,21 @@ public class Test extends LinearOpMode {
         TrajectoryActionBuilder actionBuilder = drive.actionBuilder(new Pose2d(0,0,0)).
         strafeToLinearHeading(RotatedPose2d.rotate90deg(new Pose2d(-23,4,0)).position,0)
                 .turnTo(Math.toRadians(-45));
+
+
         waitForStart();
-        //Actions.runBlocking(actionBuilder.build());
+//        Actions.runBlocking(toSample(samples[0],drive));
+
+        Actions.runBlocking(actionBuilder.build());
         Actions.runBlocking(new ParallelAction(
                 highBasket(),
                 new SequentialAction(
-                    armHalf(),new ParallelAction(new SleepAction(1),armDeplete())
+                    armHalf(),new SequentialAction(new SleepAction(2),armDeplete()),new SleepAction(9),stopBasket()
+
                 )
                 )
         );
+//crisiKrispiLikeLittleBoys
     }
 
     public Action highBasket(){
@@ -46,10 +61,22 @@ public class Test extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 ElevatorVertical.operate(ElevatorVerticalState.DEPLETE, 0,0);
-                return ElevatorVertical.getElevatorPos() <= ElevatorVerticalConstants.DepletePos -5;
+                return ElevatorVertical.getElevatorPos() <= ElevatorVerticalConstants.DepletePos -5 && isUp;
             }
 
         };
+    }
+
+
+    public Action stopBasket(){
+       return new Action() {
+           @Override
+           public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+               isUp=false;
+               return false;
+           }
+       };
+
     }
     public Action armDeplete(){
         return new Action() {
@@ -73,6 +100,19 @@ public class Test extends LinearOpMode {
             }
 
         };
+    }
+
+    public Action toSample(Pose2d sample , MecanumDrive drive){
+
+                return drive.actionBuilder(redBasket)
+                .strafeToLinearHeading(sample.position, sample.heading).build();
+
+
+    }
+
+    public  Action toBasket(Pose2d sample , MecanumDrive drive){
+        return drive.actionBuilder(sample)
+                .strafeToLinearHeading(redBasket.position, redBasket.heading).build();
     }
 
 }

@@ -53,6 +53,7 @@ public class TeleOp14029 extends OpMode {
 
 
         //vertical elevators -------------------------------------------------------------------------
+        /*
         if (gamepad1.a) {elevatorState = ElevatorVerticalState.INTAKE; elevatorHorizonticalState = ElevatorHorizonticalState.HALF;
             firstTimePressedA = true;
             aTimer = GlobalData.currentTime;
@@ -61,6 +62,8 @@ public class TeleOp14029 extends OpMode {
             elevatorHorizonticalState = ElevatorHorizonticalState.ALMOST;
             firstTimePressedA = false;
         }
+         */
+        if (gamepad1.a) {elevatorState = ElevatorVerticalState.INTAKE; elevatorHorizonticalState = ElevatorHorizonticalState.CLOSE;}
         /*
         if (elevatorState != ElevatorVerticalState.INTAKE && elevatorState != ElevatorVerticalState.MANUAL) {
             elevatorHorizonticalState = ElevatorHorizonticalState.HALF;
