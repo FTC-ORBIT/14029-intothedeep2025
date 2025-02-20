@@ -23,7 +23,7 @@ import org.firstinspires.ftc.teamcode.robotSubSystems.ElevatorVertical.ElevatorV
 
 
 
-@Autonomous(name = "test")
+@Autonomous(name = "AutoSample")
 public class Test extends LinearOpMode {
     public boolean isUp = true;
     final double robotCenterToArm = 10;
