@@ -28,8 +28,24 @@ public class RRspecimen extends LinearOpMode {
         MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0,0,0));
         ElevatorVertical.init(hardwareMap);
         TrajectoryActionBuilder firstBuilder= drive.actionBuilder(new Pose2d(0,0,0)).
-                strafeToLinearHeading(RotatedPose2d.rotate90deg(new Pose2d(0,-30,0)).position,0);
-        TrajectoryActionBuilder secondBuilder= drive.actionBuilder(new Pose2d(0,-30,0)).
+                strafeToLinearHeading(RotatedPose2d.rotate90deg(new Pose2d(0,-31,0)).position,0);
+        TrajectoryActionBuilder ThirdBuilder= drive.actionBuilder(new Pose2d(0,-31,0))
+                .strafeToLinearHeading(RotatedPose2d.rotate90deg(new Pose2d(-35,-20,0)).position,0). turnTo(Math.toRadians(180))
+                .strafeToLinearHeading(RotatedPose2d.rotate90deg(new Pose2d(-35,-50,0)).position,Math.toRadians(180))
+                .strafeToLinearHeading(RotatedPose2d.rotate90deg(new Pose2d(-50,-50,0)).position,Math.toRadians(180))
+                .strafeToLinearHeading(RotatedPose2d.rotate90deg(new Pose2d(-50,-6,0)).position,Math.toRadians(180))
+                .strafeToLinearHeading(RotatedPose2d.rotate90deg(new Pose2d(-50,-50,0)).position,Math.toRadians(180))
+                .strafeToLinearHeading(RotatedPose2d.rotate90deg(new Pose2d(-66,-50,0)).position,Math.toRadians(180))
+                .strafeToLinearHeading(RotatedPose2d.rotate90deg(new Pose2d(-66,-6,0)).position,Math.toRadians(180))
+
+                ;
+                ;
+//                .strafeToLinearHeading(new Pose2d(-35,-50,0).position,0)
+//                .strafeToLinearHeading(new Pose2d(-45,-50,0).position,0)
+//                .strafeToLinearHeading(new Pose2d(-45,-12,0).position,0);
+
+
+        TrajectoryActionBuilder secondBuilder= drive.actionBuilder(new Pose2d(0,-31,0)).
                 strafeToLinearHeading(RotatedPose2d.rotate90deg(new Pose2d(-45,-12,0)).position,0);
         waitForStart();
 
@@ -37,7 +53,7 @@ public class RRspecimen extends LinearOpMode {
                         specimen(),firstBuilder.build(),
                         new SequentialAction( new SleepAction(2),stopSpecimen())));
         Actions.runBlocking(intake());
-        Actions.runBlocking(secondBuilder.build());
+        Actions.runBlocking(ThirdBuilder.build());
     }
 
     public Action specimen(){
