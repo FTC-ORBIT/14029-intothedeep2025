@@ -85,19 +85,19 @@ public class TeleOp14029 extends OpMode {
             elevatorHorizonticalState = ElevatorHorizonticalState.OPEN;
         }
 
-        if (gamepad1.left_bumper) {
-            firstTimePressedleft_bumper =true;
-            wristState = WristState.TRANSFER; intakeState = IntakeState.OFF;
-            elevatorHorizonticalState = ElevatorHorizonticalState.CLOSE;
-            left_bumperTimer = GlobalData.currentTime;
-        }
-        if ((GlobalData.currentTime - left_bumperTimer) > 1250 && (GlobalData.currentTime-left_bumperTimer) < 4000 && firstTimePressedleft_bumper) {
-            intakeState = IntakeState.OUT;
-            firstTimePressedleft_bumper = false;
-        }
+//        if (gamepad1.left_bumper) {
+//            firstTimePressedleft_bumper =true;
+//            wristState = WristState.TRANSFER; intakeState = IntakeState.OFF;
+//            elevatorHorizonticalState = ElevatorHorizonticalState.CLOSE;
+//            left_bumperTimer = GlobalData.currentTime;
+//        }
+//        if ((GlobalData.currentTime - left_bumperTimer) > 1250 && (GlobalData.currentTime-left_bumperTimer) < 4000 && firstTimePressedleft_bumper) {
+//            intakeState = IntakeState.OUT;
+//            firstTimePressedleft_bumper = false;
+//        }
         //general----------------------------------------------------------------------------
         if (gamepad1.right_bumper) {elevatorHorizonticalState = ElevatorHorizonticalState.HALF; wristState = WristState.INTAKE; intakeState = IntakeState.IN;}
-        //if (gamepad1.left_bumper) {wristState = WristState.TRANSFER; intakeState = IntakeState.OFF; elevatorHorizonticalState = ElevatorHorizonticalState.ALMOST;}
+        if (gamepad1.left_bumper) {wristState = WristState.TRANSFER; intakeState = IntakeState.OFF; elevatorHorizonticalState = ElevatorHorizonticalState.CLOSE;}
 
         if (gamepad1.right_stick_button) {intakeState = IntakeState.OUT;}
         if (gamepad1.left_stick_button) {intakeState = IntakeState.OFF;}
