@@ -9,6 +9,7 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -39,6 +40,8 @@ public class Test extends LinearOpMode {
         TrajectoryActionBuilder actionBuilder = drive.actionBuilder(new Pose2d(0,0,0)).
         strafeToLinearHeading(RotatedPose2d.rotate90deg(new Pose2d(-23,4,0)).position,0)
                 .turnTo(Math.toRadians(-45));
+        TrajectoryActionBuilder backward = drive.actionBuilder(new Pose2d(0,0,0))
+                        .strafeToLinearHeading(new Vector2d(5,5),0);
 
 
         waitForStart();
@@ -48,12 +51,12 @@ public class Test extends LinearOpMode {
         Actions.runBlocking(new ParallelAction(
                 highBasket(),
                 new SequentialAction(
-                    armHalf(),new SequentialAction(new SleepAction(2),armDeplete()),new SleepAction(9),stopBasket()
+                    armHalf(),new SleepAction(2),armDeplete()),new SleepAction(9),stopBasket()
 
                 )
-                )
+
         );
-//crisiKrispiLikeLittleBoys
+//יש כאן קוד של לזוז אחורה אחרי שעוד לא ניסיתי
     }
 
     public Action highBasket(){
