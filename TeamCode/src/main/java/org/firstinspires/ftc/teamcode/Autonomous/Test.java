@@ -51,7 +51,7 @@ public class Test extends LinearOpMode {
         Actions.runBlocking(new ParallelAction(
                 highBasket(),
                 new SequentialAction(
-                    armHalf(),new SleepAction(2),armDeplete()),new SleepAction(9),stopBasket()
+                    armHalf(),new SleepAction(2),armDeplete(),new SleepAction(9),stopBasket())
 
                 )
 

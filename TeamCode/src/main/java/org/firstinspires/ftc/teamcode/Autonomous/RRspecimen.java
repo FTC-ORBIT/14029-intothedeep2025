@@ -22,7 +22,8 @@ import org.firstinspires.ftc.teamcode.robotSubSystems.ElevatorVertical.ElevatorV
 
 @Autonomous(name = "auto")
 public class RRspecimen extends LinearOpMode {
-    boolean isUp= true;
+
+    boolean isUp= true;boolean isUp1= true;
     @Override
     public void runOpMode() throws InterruptedException {
         MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0,0,0));
@@ -30,23 +31,27 @@ public class RRspecimen extends LinearOpMode {
         TrajectoryActionBuilder firstBuilder= drive.actionBuilder(new Pose2d(0,0,0)).
                 strafeToLinearHeading(RotatedPose2d.rotate90deg(new Pose2d(0,-31,0)).position,0);
         TrajectoryActionBuilder ThirdBuilder= drive.actionBuilder(new Pose2d(0,-31,0))
-                .strafeToLinearHeading(RotatedPose2d.rotate90deg(new Pose2d(-35,-20,0)).position,0). turnTo(Math.toRadians(180))
+                .strafeToLinearHeading(RotatedPose2d.rotate90deg(new Pose2d(-35,-20,0)).position,0). turnTo(Math.toRadians(90)).turnTo(Math.toRadians(180))
                 .strafeToLinearHeading(RotatedPose2d.rotate90deg(new Pose2d(-35,-50,0)).position,Math.toRadians(180))
                 .strafeToLinearHeading(RotatedPose2d.rotate90deg(new Pose2d(-50,-50,0)).position,Math.toRadians(180))
                 .strafeToLinearHeading(RotatedPose2d.rotate90deg(new Pose2d(-50,-6,0)).position,Math.toRadians(180))
                 .strafeToLinearHeading(RotatedPose2d.rotate90deg(new Pose2d(-50,-50,0)).position,Math.toRadians(180))
                 .strafeToLinearHeading(RotatedPose2d.rotate90deg(new Pose2d(-66,-50,0)).position,Math.toRadians(180))
                 .strafeToLinearHeading(RotatedPose2d.rotate90deg(new Pose2d(-66,-6,0)).position,Math.toRadians(180))
+                .strafeToLinearHeading(RotatedPose2d.rotate90deg(new Pose2d(-66,-50,0)).position,Math.toRadians(180))
+                .strafeToLinearHeading(RotatedPose2d.rotate90deg(new Pose2d(-75,-50,0)).position,Math.toRadians(180))
+                .strafeToLinearHeading(RotatedPose2d.rotate90deg(new Pose2d(-75,-6,0)).position,Math.toRadians(180))
+
+
+
 
                 ;
-                ;
-//                .strafeToLinearHeading(new Pose2d(-35,-50,0).position,0)
-//                .strafeToLinearHeading(new Pose2d(-45,-50,0).position,0)
-//                .strafeToLinearHeading(new Pose2d(-45,-12,0).position,0);
+
+        TrajectoryActionBuilder fourthBuilder = drive.actionBuilder(RotatedPose2d.rotate90deg(new Pose2d(-66,-6,Math.toRadians(180))))
+                .strafeToLinearHeading(RotatedPose2d.rotate90deg(new Pose2d(-50,-6,0)).position,Math.toRadians(180))
+                .strafeToLinearHeading(RotatedPose2d.rotate90deg(new Pose2d(-50,1.5,0)).position,Math.toRadians(180));
 
 
-        TrajectoryActionBuilder secondBuilder= drive.actionBuilder(new Pose2d(0,-31,0)).
-                strafeToLinearHeading(RotatedPose2d.rotate90deg(new Pose2d(-45,-12,0)).position,0);
         waitForStart();
 
         Actions.runBlocking(new ParallelAction(
@@ -54,6 +59,10 @@ public class RRspecimen extends LinearOpMode {
                         new SequentialAction( new SleepAction(2),stopSpecimen())));
         Actions.runBlocking(intake());
         Actions.runBlocking(ThirdBuilder.build());
+//
+//        Actions.runBlocking(new ParallelAction(
+//                takeSpecimen(),fourthBuilder.build(),
+//                new SequentialAction( new SleepAction(3),stopTakeSpecimen())));
     }
 
     public Action specimen(){
@@ -62,6 +71,16 @@ public class RRspecimen extends LinearOpMode {
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 ElevatorVertical.operate(ElevatorVerticalState.PUTSPECIMEN, 0,0);
                 return ElevatorVertical.getElevatorPos() <= ElevatorVerticalConstants.DepletePos -5 && isUp;
+            }
+
+        };
+    }
+    public Action takeSpecimen(){
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                ElevatorVertical.operate(ElevatorVerticalState.SPECIMEN, 0,0);
+                return ElevatorVertical.getElevatorPos() <= ElevatorVerticalConstants.DepletePos -5 && isUp1;
             }
 
         };
@@ -83,6 +102,16 @@ public class RRspecimen extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 isUp=false;
+                return false;
+            }
+        };
+
+    }
+    public Action stopTakeSpecimen(){
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                isUp1=false;
                 return false;
             }
         };
