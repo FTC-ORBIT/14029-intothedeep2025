@@ -14,7 +14,7 @@ public class ElevatorVerticalConstants {
 
     public static int IntakePos = 155;
 
-    public static int SpecimenPos = 340;
+    public static int SpecimenPos = 280;
     public static int PutSpecimenPos = 1600;
     public static int DepletePos = 2300;
 
