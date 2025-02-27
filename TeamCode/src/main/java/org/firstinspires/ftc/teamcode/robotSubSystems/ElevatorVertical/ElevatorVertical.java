@@ -87,6 +87,11 @@ public class ElevatorVertical {
         encoderResetVal = leftMotor.getCurrentPosition();
         encoderResetValL = leftMotor.getCurrentPosition();
     }
+    public static boolean inPos(){
+        return wantedPos - ElevatorVerticalConstants.posTolerance
+                < getElevatorPos() &&
+                wantedPos + ElevatorVerticalConstants.posTolerance > getElevatorPos();
+    }
 
     private static void setFloor(int wantedPos){
 

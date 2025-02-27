@@ -50,27 +50,8 @@ public class TeleOp14029 extends OpMode {
     @Override
     public void loop() {
         GlobalData.currentTime = (float) elapsedTime.milliseconds();
-
-
         //vertical elevators -------------------------------------------------------------------------
-        /*
-        if (gamepad1.a) {elevatorState = ElevatorVerticalState.INTAKE; elevatorHorizonticalState = ElevatorHorizonticalState.HALF;
-            firstTimePressedA = true;
-            aTimer = GlobalData.currentTime;
-        }
-        if ((GlobalData.currentTime - aTimer) > 1000 && firstTimePressedA == true) {
-            elevatorHorizonticalState = ElevatorHorizonticalState.ALMOST;
-            firstTimePressedA = false;
-        }
-         */
         if (gamepad1.a) {elevatorState = ElevatorVerticalState.INTAKE; elevatorHorizonticalState = ElevatorHorizonticalState.CLOSE;}
-        /*
-        if (elevatorState != ElevatorVerticalState.INTAKE && elevatorState != ElevatorVerticalState.MANUAL) {
-            elevatorHorizonticalState = ElevatorHorizonticalState.HALF;
-        }
-         */
-
-
         if (elevatorState != ElevatorVerticalState.INTAKE && ElevatorVertical.getElevatorPos() > 220) {armState = ArmState.HALF;}else {armState = ArmState.INTAKE;}
         if (gamepad1.b) {elevatorState = ElevatorVerticalState.SPECIMEN;}
         if (gamepad1.x) {elevatorState = ElevatorVerticalState.PUTSPECIMEN;}
@@ -79,22 +60,10 @@ public class TeleOp14029 extends OpMode {
         if (gamepad1.start || gamepad2.start) {ElevatorVertical.resetEncoder(); ElevatorHorizontical.resetEncoder();}
         //horizontal elevators ------------------------------------------------------------------------
         if (gamepad1.right_stick_x != 0) {elevatorHorizonticalState = ElevatorHorizonticalState.OVERRIDE;}
-
         if (gamepad1.dpad_down) {
             wristState = WristState.INTAKE; intakeState = IntakeState.IN;
             elevatorHorizonticalState = ElevatorHorizonticalState.OPEN;
         }
-
-//        if (gamepad1.left_bumper) {
-//            firstTimePressedleft_bumper =true;
-//            wristState = WristState.TRANSFER; intakeState = IntakeState.OFF;
-//            elevatorHorizonticalState = ElevatorHorizonticalState.CLOSE;
-//            left_bumperTimer = GlobalData.currentTime;
-//        }
-//        if ((GlobalData.currentTime - left_bumperTimer) > 1250 && (GlobalData.currentTime-left_bumperTimer) < 4000 && firstTimePressedleft_bumper) {
-//            intakeState = IntakeState.OUT;
-//            firstTimePressedleft_bumper = false;
-//        }
         //general----------------------------------------------------------------------------
         if (gamepad1.right_bumper) {elevatorHorizonticalState = ElevatorHorizonticalState.HALF; wristState = WristState.INTAKE; intakeState = IntakeState.IN;}
         if (gamepad1.left_bumper) {wristState = WristState.TRANSFER; intakeState = IntakeState.OFF; elevatorHorizonticalState = ElevatorHorizonticalState.CLOSE;}
@@ -106,6 +75,7 @@ public class TeleOp14029 extends OpMode {
 
         if (gamepad2.x) {intakeState = IntakeState.OUT;}
         if (gamepad2.a) {intakeState = IntakeState.OFF;}
+        Intake.kicker(gamepad2.y);
 
         if (gamepad1.back) {Gyro.resetGyro();}
 
@@ -117,7 +87,7 @@ public class TeleOp14029 extends OpMode {
         Wrist.operate(wristState);
         Drivetrain.operate(new Vector(gamepad1.left_stick_x, -gamepad1.left_stick_y), -gamepad1.right_trigger + gamepad1.left_trigger);
         telemetry.addData("Gyro", Gyro.getAngle());
-        telemetry.addData("horizontalPos", ElevatorHorizontical.getPos());
+        telemetry.addData("horizontalPos", ElevatorHorizontical.getElevatorPos());
         telemetry.addData("verticalPos", ElevatorVertical.getElevatorPos());
         telemetry.addData("timer", GlobalData.currentTime);
         telemetry.addData("timer 2", GlobalData.currentTime - left_bumperTimer);

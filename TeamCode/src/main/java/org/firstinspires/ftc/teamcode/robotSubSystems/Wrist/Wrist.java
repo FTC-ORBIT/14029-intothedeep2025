@@ -17,16 +17,16 @@ public class Wrist {
     public static void operate(WristState state) {
         switch (state) {
             case TRANSFER:
-                leftWristServo.setPosition(0.05);
+                leftWristServo.setPosition(0.025);
                 rightWristServo.setPosition(0.95);
                 break;
             case INTAKE:
-                leftWristServo.setPosition(0.69);//0.735
-                rightWristServo.setPosition(0.35);//0.245
+                leftWristServo.setPosition(0.695);
+                rightWristServo.setPosition(0.28);
                 break;
             case DEPLETE:
                 leftWristServo.setPosition(0.55);
-                rightWristServo.setPosition(0.45);
+                rightWristServo.setPosition(0.425);
         }
     }
 }

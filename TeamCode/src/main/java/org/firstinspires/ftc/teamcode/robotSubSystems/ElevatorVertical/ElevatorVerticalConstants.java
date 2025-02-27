@@ -20,5 +20,7 @@ public class ElevatorVerticalConstants {
 
     public static final int MAX_OPEN_POS = 2300;
 
+    public static final int posTolerance = 10;
+
 
 }

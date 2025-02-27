@@ -17,21 +17,19 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.roadRunner_1_0.MecanumDrive;
 import org.firstinspires.ftc.teamcode.robotSubSystems.Arm.Arm;
 import org.firstinspires.ftc.teamcode.robotSubSystems.Arm.ArmState;
+import org.firstinspires.ftc.teamcode.robotSubSystems.ElevatorHorizontical.ElevatorHorizontical;
+import org.firstinspires.ftc.teamcode.robotSubSystems.ElevatorHorizontical.ElevatorHorizonticalState;
 import org.firstinspires.ftc.teamcode.robotSubSystems.ElevatorVertical.ElevatorVertical;
 import org.firstinspires.ftc.teamcode.robotSubSystems.ElevatorVertical.ElevatorVerticalConstants;
 import org.firstinspires.ftc.teamcode.robotSubSystems.ElevatorVertical.ElevatorVerticalState;
-
+import org.firstinspires.ftc.teamcode.robotSubSystems.Wrist.Wrist;
+import org.firstinspires.ftc.teamcode.robotSubSystems.Wrist.WristState;
 
 
 @Autonomous(name = "AutoSample")
-public class Test extends LinearOpMode {
+public class AutoSample extends LinearOpMode {
     public boolean isUp = true;
     final double robotCenterToArm = 10;
-    Pose2d redBasket = RotatedPose2d.rotate90deg(new Pose2d(-64 + robotCenterToArm/Math.sqrt(2), -64 + robotCenterToArm/Math.sqrt(2),Math.toRadians(225)));
-    Pose2d yellow2GamePiece1 = RotatedPose2d.rotate90deg(new Pose2d(-68, -26 - robotCenterToArm,Math.toRadians(90)));
-    Pose2d yellow2GamePiece2 = RotatedPose2d.rotate90deg(new Pose2d(-58, -26 - robotCenterToArm,Math.toRadians(90)));
-    Pose2d yellow2GamePiece3 = RotatedPose2d.rotate90deg(new Pose2d(-48, -26 - robotCenterToArm,Math.toRadians(90)));
-    Pose2d[] samples = {yellow2GamePiece3,yellow2GamePiece2,yellow2GamePiece1};
     @Override
     public void runOpMode() throws InterruptedException {
         MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0,0,0));
@@ -49,13 +47,14 @@ public class Test extends LinearOpMode {
 
         Actions.runBlocking(actionBuilder.build());
         Actions.runBlocking(new ParallelAction(
-                highBasket(),
+                elevatorVericalByState(ElevatorVerticalState.DEPLETE),
                 new SequentialAction(
-                    armHalf(),new SleepAction(2),armDeplete(),new SleepAction(9),stopBasket())
-
+                    armHalf(),new SleepAction(2),armDeplete(),new SleepAction(4),stopBasket(), elevatorVericalByState(ElevatorVerticalState.INTAKE))
                 )
 
         );
+        Actions.runBlocking(new SequentialAction(intake() , new SleepAction(5))
+);
 //יש כאן קוד של לזוז אחורה אחרי שעוד לא ניסיתי
     }
 
@@ -81,6 +80,28 @@ public class Test extends LinearOpMode {
        };
 
     }
+
+    public Action elevatorVericalByState(final ElevatorVerticalState elevatorVerticalState){
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                ElevatorVertical.operate(elevatorVerticalState,0,0);
+                return !ElevatorVertical.inPos();
+            }
+        };
+    }
+
+    public Action elevatorHorizontalByState(final ElevatorHorizonticalState elevatorHorizonticalState){
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                ElevatorHorizontical.opreate(elevatorHorizonticalState,0);
+                return !ElevatorVertical.inPos();
+            }
+        };
+    }
+
+
     public Action armDeplete(){
         return new Action() {
             @Override
@@ -104,18 +125,26 @@ public class Test extends LinearOpMode {
 
         };
     }
+    public Action wristByState(final WristState wristState) {
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                Wrist.operate(wristState);
+                return Wrist.leftWristServo.getPosition() <= 0.69;
+            }
+        };
 
-    public Action toSample(Pose2d sample , MecanumDrive drive){
-
-                return drive.actionBuilder(redBasket)
-                .strafeToLinearHeading(sample.position, sample.heading).build();
 
 
     }
-
-    public  Action toBasket(Pose2d sample , MecanumDrive drive){
-        return drive.actionBuilder(sample)
-                .strafeToLinearHeading(redBasket.position, redBasket.heading).build();
+    public Action intake() {
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                elevatorHorizontalByState(ElevatorHorizonticalState.HALF);
+                wristByState(WristState.INTAKE);
+                return false;
+            }
+        };
     }
-
 }

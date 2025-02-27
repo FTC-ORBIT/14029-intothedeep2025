@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.Utils.PID;
+import org.firstinspires.ftc.teamcode.robotSubSystems.ElevatorVertical.ElevatorVerticalConstants;
 
 public class ElevatorHorizontical {
     private static DcMotor elevatorMotor;
@@ -36,8 +37,13 @@ public class ElevatorHorizontical {
                         break;
                 }
                 pid.setWanted(wantedPos);
-                elevatorMotor.setPower(pid.update(getPos()));
+                elevatorMotor.setPower(pid.update(getElevatorPos()));
     }
-    public static double getPos() {return elevatorMotor.getCurrentPosition() - resetVal;}
+    public static boolean inPos(){
+        return wantedPos - ElevatorVerticalConstants.posTolerance
+                < getElevatorPos() &&
+                wantedPos + ElevatorVerticalConstants.posTolerance > getElevatorPos();
+    }
+    public static double getElevatorPos() {return elevatorMotor.getCurrentPosition() - resetVal;}
     public static void resetEncoder() {resetVal = elevatorMotor.getCurrentPosition();}
 }
