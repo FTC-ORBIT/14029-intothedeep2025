@@ -13,8 +13,8 @@ public class Intake {
 
 
     public static void init(HardwareMap hardwareMap) {
-        rightIntakeServo = hardwareMap.servo.get("rightIntakeServo");
-        leftIntakeServo = hardwareMap.servo.get("leftIntakeServo");
+        rightIntakeServo = hardwareMap.servo.get("right");
+        leftIntakeServo = hardwareMap.servo.get("left");
         intakeBar = hardwareMap.servo.get("intakeBar");
         kicker = hardwareMap.servo.get("kicker");
     }

@@ -92,7 +92,7 @@ public class TeleOp14029 extends OpMode {
         telemetry.addData("timer", GlobalData.currentTime);
         telemetry.addData("timer 2", GlobalData.currentTime - left_bumperTimer);
         telemetry.addData("bool", firstTimePressedleft_bumper);
-        telemetry.addData("arm", Arm.armServo.getPosition());
+        telemetry.addData("intakestate", intakeState);
     }
 }
 
