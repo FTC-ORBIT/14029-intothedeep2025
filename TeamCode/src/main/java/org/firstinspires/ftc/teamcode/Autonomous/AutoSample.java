@@ -22,6 +22,8 @@ import org.firstinspires.ftc.teamcode.robotSubSystems.ElevatorHorizontical.Eleva
 import org.firstinspires.ftc.teamcode.robotSubSystems.ElevatorVertical.ElevatorVertical;
 import org.firstinspires.ftc.teamcode.robotSubSystems.ElevatorVertical.ElevatorVerticalConstants;
 import org.firstinspires.ftc.teamcode.robotSubSystems.ElevatorVertical.ElevatorVerticalState;
+import org.firstinspires.ftc.teamcode.robotSubSystems.Intake.Intake;
+import org.firstinspires.ftc.teamcode.robotSubSystems.Intake.IntakeState;
 import org.firstinspires.ftc.teamcode.robotSubSystems.Wrist.Wrist;
 import org.firstinspires.ftc.teamcode.robotSubSystems.Wrist.WristState;
 
@@ -35,6 +37,7 @@ public class AutoSample extends LinearOpMode {
         MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0,0,0));
         ElevatorVertical.init(hardwareMap);
         Arm.init(hardwareMap);
+        Intake.init(hardwareMap);
         TrajectoryActionBuilder actionBuilder = drive.actionBuilder(new Pose2d(0,0,0)).
         strafeToLinearHeading(RotatedPose2d.rotate90deg(new Pose2d(-23,4,0)).position,0)
                 .turnTo(Math.toRadians(-45));
@@ -43,8 +46,6 @@ public class AutoSample extends LinearOpMode {
 
 
         waitForStart();
-//        Actions.runBlocking(toSample(samples[0],drive));
-
         Actions.runBlocking(actionBuilder.build());
         Actions.runBlocking(new ParallelAction(
                 elevatorVericalByState(ElevatorVerticalState.DEPLETE),
@@ -53,10 +54,10 @@ public class AutoSample extends LinearOpMode {
                 )
 
         );
-        Actions.runBlocking(new SequentialAction(intake() , new SleepAction(5))
-);
-//יש כאן קוד של לזוז אחורה אחרי שעוד לא ניסיתי
+        Actions.runBlocking(new SequentialAction(intake() , new SleepAction(5)));
     }
+
+
 
     public Action highBasket(){
         return new Action() {
@@ -96,7 +97,7 @@ public class AutoSample extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 ElevatorHorizontical.opreate(elevatorHorizonticalState,0);
-                return !ElevatorVertical.inPos();
+                return !ElevatorHorizontical.inPos();
             }
         };
     }
@@ -137,14 +138,42 @@ public class AutoSample extends LinearOpMode {
 
 
     }
+
+    public Action intakeByState(final IntakeState intakeState){
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                Intake.operate(intakeState);
+                return Intake.leftIntakeServo.getPosition() <= 0.9;
+            }
+        };
+    }
     public Action intake() {
         return new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 elevatorHorizontalByState(ElevatorHorizonticalState.HALF);
                 wristByState(WristState.INTAKE);
-                return false;
+                intakeByState(IntakeState.IN);
+                return Intake.leftIntakeServo.getPosition() <= 0.5 && Wrist.leftWristServo.getPosition() <= 0.69 && !ElevatorHorizontical.inPos();
             }
         };
     }
-}
+    public Action transferSample(){
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                wristByState(WristState.TRANSFER);
+                elevatorVericalByState(ElevatorVerticalState.INTAKE);
+                sleep(2000);
+                intakeByState(IntakeState.OUT);
+
+                return Intake.leftIntakeServo.getPosition() <= 0.5 && Wrist.leftWristServo.getPosition() <= 0.69 && !ElevatorVertical.inPos();
+            }
+        };
+    }
+
+};
+
+
+

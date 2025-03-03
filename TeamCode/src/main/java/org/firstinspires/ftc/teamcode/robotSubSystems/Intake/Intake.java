@@ -22,9 +22,10 @@ public class Intake {
     public static void operate(IntakeState state) {
         switch (state) {
             case IN:
+                intakeBar.setPosition(1);
                 leftIntakeServo.setPosition(-1);
                 rightIntakeServo.setPosition(1);
-                intakeBar.setPosition(1);
+
                 break;
             case OFF:
                 leftIntakeServo.setPosition(0.5);
