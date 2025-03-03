@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
@@ -31,6 +30,10 @@ import org.firstinspires.ftc.teamcode.robotSubSystems.Wrist.WristState;
 @Autonomous(name = "AutoSample")
 public class AutoSample extends LinearOpMode {
     public boolean isUp = true;
+    public IntakeState robotIntakeState = IntakeState.OFF;
+
+    public ElevatorVerticalState robotVerticalElevatorState = ElevatorVerticalState.OFF;
+    public ElevatorHorizonticalState robotHorizonticalElevatorState = ElevatorHorizonticalState.OFF;
     final double robotCenterToArm = 10;
     @Override
     public void runOpMode() throws InterruptedException {
@@ -45,16 +48,19 @@ public class AutoSample extends LinearOpMode {
                         .strafeToLinearHeading(new Vector2d(5,5),0);
 
 
-        waitForStart();
-        Actions.runBlocking(actionBuilder.build());
-        Actions.runBlocking(new ParallelAction(
-                elevatorVericalByState(ElevatorVerticalState.DEPLETE),
-                new SequentialAction(
-                    armHalf(),new SleepAction(2),armDeplete(),new SleepAction(4),stopBasket(), elevatorVericalByState(ElevatorVerticalState.INTAKE))
-                )
+//        waitForStart();
+//        Actions.runBlocking(actionBuilder.build());
+//        Actions.runBlocking(new ParallelAction(
+//                elevatorVericalByState(ElevatorVerticalState.DEPLETE),
+//                new SequentialAction(
+//                    armHalf(),new SleepAction(2),armDeplete(),new SleepAction(4),stopBasket(), elevatorVericalByState(ElevatorVerticalState.INTAKE))
+//                )
+//
+//        );
+        Actions.runBlocking(new SequentialAction(intakeByState(IntakeState.IN) , new SleepAction(1)));
+        Actions.runBlocking(new SequentialAction(wristAction(WristState.INTAKE) ,new SleepAction(1) ,wristByState(WristState.OFF)));
+        Actions.runBlocking(new SequentialAction(wristAction(WristState.DEPLETE)));
 
-        );
-        Actions.runBlocking(new SequentialAction(intake() , new SleepAction(5)));
     }
 
 
@@ -139,14 +145,58 @@ public class AutoSample extends LinearOpMode {
 
     }
 
-    public Action intakeByState(final IntakeState intakeState){
-        return new Action() {
+//    public Action intakeByState(IntakeState intakeState){
+//        return new Action() {
+//            private boolean isInitialized = false;
+//            @Override
+//            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+//                if (!isInitialized){
+//                    robotIntakeState = intakeState;
+//                    isInitialized = true;
+//                }
+//                Intake.operate(robotIntakeState);
+//                return robotIntakeState != IntakeState.OFF;
+//            }
+//
+//        };
+//    }
+
+
+    public Action intakeByState(IntakeState intakeState){
+        Action servoIntakeAction = new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                telemetryPacket.put("leftWrist",Intake.leftIntakeServo.getPosition());
                 Intake.operate(intakeState);
-                return Intake.leftIntakeServo.getPosition() <= 0.9;
+                if (intakeState == IntakeState.IN) {
+                    return (Intake.rightIntakeServo.getPosition() < Intake.POS_IN_RIGHT_INTAKE);
+                } else if (intakeState == IntakeState.OFF) {
+                    return Intake.rightIntakeServo.getPosition() < Intake.POS_OFF_RIGHT_INTAKE;
+                } else {
+                    return Intake.rightIntakeServo.getPosition() < Intake.POS_OUT_RIGHT_INTAKE;
+                }
             }
         };
+        return new SequentialAction(servoIntakeAction , new SleepAction(1));
+
+    }
+    public Action wristAction(WristState wristState){
+        Action servoWristAction = new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                telemetryPacket.put("leftWrist",Wrist.leftWristServo.getPosition());
+                Wrist.operate(wristState);
+                if (wristState == WristState.INTAKE) {
+                    return (Wrist.rightWristServo.getPosition() < Wrist.POS_INTAKE_RIGHT);
+                } else if (wristState == WristState.DEPLETE) {
+                    return Wrist.rightWristServo.getPosition() < Wrist.POS_DEPLETE_RIGHT;
+                } else {
+                    return Wrist.rightWristServo.getPosition() < Wrist.POS_TRANSFER_RIGHT;
+                }
+            }
+        };
+        return new SequentialAction(servoWristAction , new SleepAction(1));
+
     }
     public Action intake() {
         return new Action() {
