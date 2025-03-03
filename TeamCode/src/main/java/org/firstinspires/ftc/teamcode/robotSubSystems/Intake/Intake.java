@@ -12,6 +12,23 @@ public class Intake {
     public static Servo kicker;
 
 
+    public static final double POS_IN_RIGHT_INTAKE = 1;
+    public static final double POS_IN_LEFT_INTAKE = -1;
+    public static final double POS_IN_INTAKE_BAR = 1;
+    public static final double POS_OFF_RIGHT_INTAKE = 0.5;
+    public static final double POS_OFF_LEFT_INTAKE = 0.5;
+    public static final double POS_OFF_INTAKE_BAR = 0.5;
+    public static final double POS_OUT_LEFT_INTAKE = 1;
+    public static final double POS_OUT_RIGHT_INTAKE= -1;
+    public static final double POS_OUT_INTAKE_BAR = -1;
+
+
+
+
+
+
+
+
     public static void init(HardwareMap hardwareMap) {
         rightIntakeServo = hardwareMap.servo.get("right");
         leftIntakeServo = hardwareMap.servo.get("left");
@@ -22,20 +39,20 @@ public class Intake {
     public static void operate(IntakeState state) {
         switch (state) {
             case IN:
-                intakeBar.setPosition(1);
-                leftIntakeServo.setPosition(-1);
-                rightIntakeServo.setPosition(1);
+                intakeBar.setPosition(POS_IN_INTAKE_BAR);
+                leftIntakeServo.setPosition(POS_IN_LEFT_INTAKE);
+                rightIntakeServo.setPosition(POS_IN_RIGHT_INTAKE);
 
                 break;
             case OFF:
-                leftIntakeServo.setPosition(0.5);
-                rightIntakeServo.setPosition(0.5);
-                intakeBar.setPosition(0.5);
+                leftIntakeServo.setPosition(POS_OFF_LEFT_INTAKE);
+                rightIntakeServo.setPosition(POS_OFF_RIGHT_INTAKE);
+                intakeBar.setPosition(POS_OFF_INTAKE_BAR);
                 break;
             case OUT:
-                leftIntakeServo.setPosition(1);
-                rightIntakeServo.setPosition(-1);
-                intakeBar.setPosition(-1);
+                leftIntakeServo.setPosition(POS_OUT_LEFT_INTAKE);
+                rightIntakeServo.setPosition(POS_OUT_RIGHT_INTAKE);
+                intakeBar.setPosition(POS_OUT_INTAKE_BAR);
         }
     }
     public  static void kicker(boolean button) {

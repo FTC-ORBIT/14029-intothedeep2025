@@ -5,6 +5,14 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 public class Wrist {
 
+    public static final double POS_TRANSFER_LEFT = 0.03;
+    public static final double POS_TRANSFER_RIGHT = 0.9;
+    public static final double POS_INTAKE_LEFT = 0.8;
+    public static final double POS_INTAKE_RIGHT = 0.2;
+
+    public static final double POS_DEPLETE_LEFT = 0.55;
+    public static final double POS_DEPLETE_RIGHT = 0.45;
+
     public static Servo rightWristServo;
     public static Servo leftWristServo;
 
@@ -17,16 +25,16 @@ public class Wrist {
     public static void operate(WristState state) {
         switch (state) {
             case TRANSFER:
-                //leftWristServo.setPosition(0.03);//0.025
-                rightWristServo.setPosition(0.9);//0.95
+                //leftWristServo.setPosition(POS_TRANSFER_LEFT);//0.025
+                rightWristServo.setPosition(POS_TRANSFER_RIGHT);//0.95
                 break;
             case INTAKE:
-                //leftWristServo.setPosition(0.8);
-                rightWristServo.setPosition(0.2);//
+                //leftWristServo.setPosition(POS_INTAKE_LEFT);
+                rightWristServo.setPosition(POS_INTAKE_RIGHT);//
                 break;
             case DEPLETE:
-                leftWristServo.setPosition(0.55);//0.55
-                rightWristServo.setPosition(0.425);//0.425
+                leftWristServo.setPosition(POS_DEPLETE_LEFT);//0.55
+                rightWristServo.setPosition(POS_DEPLETE_RIGHT);//0.425
         }
     }
 }
