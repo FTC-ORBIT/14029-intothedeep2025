@@ -71,7 +71,7 @@ public class TeleOp14029 extends OpMode {
         if (gamepad1.right_stick_button) {intakeState = IntakeState.OUT;}
         if (gamepad1.left_stick_button) {intakeState = IntakeState.OFF;}
         if (gamepad1.dpad_up) {armState = ArmState.DEPLETE;}
-        if (gamepad1.dpad_left || gamepad1.dpad_right) {wristState = WristState.DEPLETE;}
+        if (gamepad1.dpad_left || gamepad1.dpad_right || gamepad2.dpad_left || gamepad2.dpad_right) {wristState = WristState.DEPLETE; intakeState = IntakeState.OFF;}
 
         if (gamepad2.x) {intakeState = IntakeState.OUT;}
         if (gamepad2.a) {intakeState = IntakeState.OFF;}

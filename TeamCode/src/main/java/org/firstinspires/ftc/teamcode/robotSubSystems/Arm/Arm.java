@@ -12,7 +12,7 @@ public class Arm {
     public static void operate(ArmState state) {
         switch (state) {
             case INTAKE:
-                armServo.setPosition(0.01);
+                armServo.setPosition(0.091);
                 break;
             case DEPLETE:
                 armServo.setPosition(0.75);

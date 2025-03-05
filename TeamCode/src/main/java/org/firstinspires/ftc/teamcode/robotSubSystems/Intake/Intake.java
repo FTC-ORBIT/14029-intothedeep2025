@@ -52,7 +52,7 @@ public class Intake {
             case OUT:
                 leftIntakeServo.setPosition(POS_OUT_LEFT_INTAKE);
                 rightIntakeServo.setPosition(POS_OUT_RIGHT_INTAKE);
-                intakeBar.setPosition(POS_OUT_INTAKE_BAR);
+                //intakeBar.setPosition(POS_OUT_INTAKE_BAR);
         }
     }
     public  static void kicker(boolean button) {
