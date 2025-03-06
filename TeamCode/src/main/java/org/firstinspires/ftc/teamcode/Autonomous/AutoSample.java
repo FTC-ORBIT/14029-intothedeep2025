@@ -8,7 +8,6 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
-import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -47,11 +46,18 @@ public class AutoSample extends LinearOpMode {
         ElevatorVertical.init(hardwareMap);
         Arm.init(hardwareMap);
         Intake.init(hardwareMap);
-        TrajectoryActionBuilder actionBuilder = drive.actionBuilder(new Pose2d(0,0,0)).
-        strafeToLinearHeading(RotatedPose2d.rotate90deg(new Pose2d(-23,4,0)).position,0)
-                .turnTo(Math.toRadians(-45));
-        TrajectoryActionBuilder backward = drive.actionBuilder(new Pose2d(0,0,0))
-                        .strafeToLinearHeading(new Vector2d(5,5),0);
+        TrajectoryActionBuilder startToBasket = drive.actionBuilder(startPos)
+                .strafeToLinearHeading(redBasket.position,startPos.heading)
+                .turnTo(redBasket.heading);
+        TrajectoryActionBuilder basketToSample1 = drive.actionBuilder(redBasket)
+                .turnTo(sample1.heading)
+                .strafeToLinearHeading(sample1.position,sample1.heading);
+        TrajectoryActionBuilder basketToSample2 = drive.actionBuilder(redBasket)
+                .turnTo(sample2.heading)
+                .strafeToLinearHeading(sample2.position,sample2.heading);
+        TrajectoryActionBuilder basketToSample3 = drive.actionBuilder(redBasket)
+                .turnTo(sample3.heading)
+                .strafeToLinearHeading(sample3.position,sample3.heading);
 
 
 //        waitForStart();
