@@ -32,6 +32,12 @@ public class AutoSample extends LinearOpMode {
     public boolean isUp = true;
     public IntakeState robotIntakeState = IntakeState.OFF;
 
+    Pose2d redBasket = new Pose2d(-12,117 ,Math.toRadians(-45));
+    Pose2d sample1 = new Pose2d(-22, 109,Math.toRadians(0));
+    Pose2d sample2 = new Pose2d(-22, 119,Math.toRadians(0));
+    Pose2d sample3 = new Pose2d(-23, 113,Math.toRadians(38));
+    Pose2d startPos = new Pose2d(98, 0,Math.toRadians(0));
+
     public ElevatorVerticalState robotVerticalElevatorState = ElevatorVerticalState.OFF;
     public ElevatorHorizonticalState robotHorizonticalElevatorState = ElevatorHorizonticalState.OFF;
     final double robotCenterToArm = 10;
