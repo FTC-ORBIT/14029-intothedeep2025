@@ -25,15 +25,15 @@ public class Wrist {
     public static void operate(WristState state) {
         switch (state) {
             case TRANSFER:
-                //leftWristServo.setPosition(POS_TRANSFER_LEFT);//0.025
+                leftWristServo.setPosition(POS_TRANSFER_LEFT);//0.025
                 rightWristServo.setPosition(POS_TRANSFER_RIGHT);//0.95
                 break;
             case INTAKE:
-                //leftWristServo.setPosition(POS_INTAKE_LEFT);
+                leftWristServo.setPosition(POS_INTAKE_LEFT);
                 rightWristServo.setPosition(POS_INTAKE_RIGHT);//
                 break;
             case DEPLETE:
-                //leftWristServo.setPosition(POS_DEPLETE_LEFT);//0.55
+                leftWristServo.setPosition(POS_DEPLETE_LEFT);//0.55
                 rightWristServo.setPosition(POS_DEPLETE_RIGHT);//0.425
         }
     }

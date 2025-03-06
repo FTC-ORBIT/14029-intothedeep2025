@@ -84,7 +84,7 @@ public class ElevatorVertical {
     }
 
     public static void resetEncoder(){
-        encoderResetVal = leftMotor.getCurrentPosition();
+        encoderResetVal = rightMotor.getCurrentPosition();
         encoderResetValL = leftMotor.getCurrentPosition();
     }
     public static boolean inPos(){

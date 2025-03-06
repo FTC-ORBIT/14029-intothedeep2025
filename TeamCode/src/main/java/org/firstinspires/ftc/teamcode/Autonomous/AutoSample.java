@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
@@ -30,6 +31,7 @@ import org.firstinspires.ftc.teamcode.robotSubSystems.Wrist.WristState;
 public class AutoSample extends LinearOpMode {
     public boolean isUp = true;
     public IntakeState robotIntakeState = IntakeState.OFF;
+    WristState wristState = WristState.TRANSFER;
 
     Pose2d redBasket = new Pose2d(-12,117 ,Math.toRadians(-45));
     Pose2d sample1 = new Pose2d(-22, 109,Math.toRadians(0));
@@ -46,6 +48,9 @@ public class AutoSample extends LinearOpMode {
         ElevatorVertical.init(hardwareMap);
         Arm.init(hardwareMap);
         Intake.init(hardwareMap);
+        Wrist.init(hardwareMap);
+
+
         TrajectoryActionBuilder startToBasket = drive.actionBuilder(startPos)
                 .strafeToLinearHeading(redBasket.position,startPos.heading)
                 .turnTo(redBasket.heading);
@@ -60,7 +65,7 @@ public class AutoSample extends LinearOpMode {
                 .strafeToLinearHeading(sample3.position,sample3.heading);
 
 
-//        waitForStart();
+        waitForStart();
 //        Actions.runBlocking(actionBuilder.build());
 //        Actions.runBlocking(new ParallelAction(
 //                elevatorVericalByState(ElevatorVerticalState.DEPLETE),
@@ -69,20 +74,72 @@ public class AutoSample extends LinearOpMode {
 //                )
 //
 //        );
-        Actions.runBlocking(new SequentialAction(intakeByState(IntakeState.IN) , new SleepAction(1)));
-        Actions.runBlocking(new SequentialAction(wristAction(WristState.INTAKE) ,new SleepAction(1) ,wristByState(WristState.OFF)));
-        Actions.runBlocking(new SequentialAction(wristAction(WristState.DEPLETE)));
+//        Actions.runBlocking(new SequentialAction(wristAction(WristState.INTAKE) ,new SleepAction(1)));
+//        Actions.runBlocking(new SequentialAction(intakeByState(IntakeState.IN) , new SleepAction(1)));
+//        Actions.runBlocking(new SequentialAction(wristAction(WristState.TRANSFER)));
+
+        Actions.runBlocking(new SequentialAction(sampleIntake() , sampleTransfer()));
+//        Actions.runBlocking(elevatorVericalByState(ElevatorVerticalState.SPECIMEN));
 
     }
 
 
+    public Action sampleIntake(){
+       return new SequentialAction(
+                new ParallelAction(
+                        wristAction(WristState.INTAKE)
+                        ,intakeByState(IntakeState.IN)
+                ),new SleepAction(2)
+        );
+    }
 
+    public Action sampleTransfer(){
+
+        return new ParallelAction(
+                new SequentialAction(
+                    new ParallelAction(
+                        wristAction(WristState.TRANSFER)
+                        ,intakeByState(IntakeState.OFF)
+
+
+                )
+                ,intakeByState(IntakeState.OUT)
+                ,new SleepAction(1)
+                )
+                ,elevatorVericalByState(ElevatorVerticalState.SPECIMEN)
+        );
+    }
+    public Action sampleBasket(){
+        return new SequentialAction(
+                new ParallelAction(
+                        elevatorVericalByState(ElevatorVerticalState.DEPLETE)
+                        ,armHalf()
+                )
+                ,new ParallelAction(
+                        elevatorVericalByState(ElevatorVerticalState.DEPLETE)
+                    ,armDeplete()
+                )
+        );
+    }
     public Action highBasket(){
+        isUp=true;
         return new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 ElevatorVertical.operate(ElevatorVerticalState.DEPLETE, 0,0);
                 return ElevatorVertical.getElevatorPos() <= ElevatorVerticalConstants.DepletePos -5 && isUp;
+            }
+
+        };
+    }
+
+    public Action elevatorVerticalSampleTransfer(){
+        isUp=true;
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                ElevatorVertical.operate(ElevatorVerticalState.SPECIMEN, 0,0);
+                return ElevatorVertical.getElevatorPos() <= ElevatorVerticalConstants.SpecimenPos -5 && isUp;
             }
 
         };
@@ -104,6 +161,7 @@ public class AutoSample extends LinearOpMode {
         return new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                telemetryPacket.put("elevator pos", ElevatorVertical.getElevatorPos());
                 ElevatorVertical.operate(elevatorVerticalState,0,0);
                 return !ElevatorVertical.inPos();
             }
@@ -196,7 +254,7 @@ public class AutoSample extends LinearOpMode {
         Action servoWristAction = new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                telemetryPacket.put("leftWrist",Wrist.leftWristServo.getPosition());
+//                telemetryPacket.put("rightServoPos",Wrist.rightWristServo.getPosition());
                 Wrist.operate(wristState);
                 if (wristState == WristState.INTAKE) {
                     return (Wrist.rightWristServo.getPosition() < Wrist.POS_INTAKE_RIGHT);
@@ -217,7 +275,7 @@ public class AutoSample extends LinearOpMode {
                 elevatorHorizontalByState(ElevatorHorizonticalState.HALF);
                 wristByState(WristState.INTAKE);
                 intakeByState(IntakeState.IN);
-                return Intake.leftIntakeServo.getPosition() <= 0.5 && Wrist.leftWristServo.getPosition() <= 0.69 && !ElevatorHorizontical.inPos();
+                return Intake.leftIntakeServo.getPosition() <= Intake.POS_OUT_LEFT_INTAKE && Wrist.leftWristServo.getPosition() <= Wrist.POS_INTAKE_LEFT && !ElevatorHorizontical.inPos();
             }
         };
     }
@@ -227,10 +285,10 @@ public class AutoSample extends LinearOpMode {
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 wristByState(WristState.TRANSFER);
                 elevatorVericalByState(ElevatorVerticalState.INTAKE);
-                sleep(2000);
+                sleep(2002);
                 intakeByState(IntakeState.OUT);
 
-                return Intake.leftIntakeServo.getPosition() <= 0.5 && Wrist.leftWristServo.getPosition() <= 0.69 && !ElevatorVertical.inPos();
+                return Intake.leftIntakeServo.getPosition() <= Intake.POS_OUT_LEFT_INTAKE && Wrist.rightWristServo.getPosition() <= Wrist.POS_DEPLETE_RIGHT && !ElevatorVertical.inPos();
             }
         };
     }
