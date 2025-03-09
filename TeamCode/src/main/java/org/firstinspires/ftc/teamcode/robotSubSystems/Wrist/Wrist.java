@@ -11,7 +11,7 @@ public class Wrist {
     public static final double POS_INTAKE_RIGHT = 0.2;
 
     public static final double POS_DEPLETE_LEFT = 0.55;
-    public static final double POS_DEPLETE_RIGHT = 0.45;
+    public static final double POS_DEPLETE_RIGHT = 0.33;
 
     public static Servo rightWristServo;
     public static Servo leftWristServo;

@@ -33,7 +33,7 @@ public class ElevatorVertical {
         resetEncoder();
     }
     private static double power = 0;
-    private static ElevatorVerticalState lastWantedState = ElevatorVerticalState.INTAKE;
+    public static ElevatorVerticalState lastWantedState = ElevatorVerticalState.OFF;
     public static void operate(ElevatorVerticalState wantedState, double gamepadVal, double secondGamepadVal) {
             if (gamepadVal == 0 && wantedState != lastWantedState) {
                 switch (wantedState) {
@@ -73,7 +73,7 @@ public class ElevatorVertical {
     private static int encoderResetVal = 0;
     private static int encoderResetValL = 0;
     public static int getElevatorPos() {
-        return leftMotor.getCurrentPosition() - encoderResetVal;
+        return leftMotor.getCurrentPosition() - encoderResetValL;
     }
 
     public static int getWantedPos(){return wantedPos;}

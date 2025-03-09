@@ -24,7 +24,7 @@ import org.firstinspires.ftc.teamcode.roadRunner_1_0.messages.TwoDeadWheelInputs
 @Config
 public final class TwoDeadWheelLocalizer implements Localizer {
     public static class Params {
-        public double parYTicks = -842.1101828178132; // y position of the parallel encoder (in tick units)
+        public double parYTicks = 842.1101828178132; // y position of the parallel encoder (in tick units)
         public double perpXTicks = 1198.925354318038; // x position of the perpendicular encoder (in tick units)
     }
 
@@ -49,7 +49,7 @@ public final class TwoDeadWheelLocalizer implements Localizer {
         perp = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "lf")));
 
         // TODO: reverse encoder directions if needed
-        //perp.setDirection(DcMotorSimple.Direction.REVERSE);
+        //par.setDirection(DcMotorSimple.Direction.REVERSE);
 
         this.imu = imu;
 

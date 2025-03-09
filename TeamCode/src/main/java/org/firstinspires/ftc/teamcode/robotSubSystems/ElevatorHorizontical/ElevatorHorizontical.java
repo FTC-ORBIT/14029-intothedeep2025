@@ -4,13 +4,14 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.Utils.PID;
-import org.firstinspires.ftc.teamcode.robotSubSystems.ElevatorVertical.ElevatorVerticalConstants;
 
 public class ElevatorHorizontical {
     private static DcMotor elevatorMotor;
-    private static PID pid = new PID(ElevatorHorizonticalConstants.Kp,ElevatorHorizonticalConstants.Ki,ElevatorHorizonticalConstants.Kd,ElevatorHorizonticalConstants.Kf,ElevatorHorizonticalConstants.iZone,ElevatorHorizonticalConstants.maxSpeed,ElevatorHorizonticalConstants.minSpeed);
+    private static PID pidTeleOP = new PID(ElevatorHorizonticalConstants.KpTeleop,ElevatorHorizonticalConstants.Ki,ElevatorHorizonticalConstants.Kd,ElevatorHorizonticalConstants.Kf,ElevatorHorizonticalConstants.iZone,ElevatorHorizonticalConstants.maxSpeed,ElevatorHorizonticalConstants.minSpeed);
 
-    private static float wantedPos;
+    private static PID pidAuto = new PID(ElevatorHorizonticalConstants.KpAuto,ElevatorHorizonticalConstants.Ki,ElevatorHorizonticalConstants.Kd,ElevatorHorizonticalConstants.Kf,ElevatorHorizonticalConstants.iZone,ElevatorHorizonticalConstants.maxSpeed,ElevatorHorizonticalConstants.minSpeed);
+
+    private static int wantedPos;
     private static int resetVal = 0;
 
     public static void init(HardwareMap hardwareMap){
@@ -18,7 +19,7 @@ public class ElevatorHorizontical {
         elevatorMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
-    public static void opreate(ElevatorHorizonticalState elevatorHorizonticalState, float rightJoyStick){
+    public static void opreate(ElevatorHorizonticalState elevatorHorizonticalState, float rightJoyStick, boolean isTeleop){
                 switch(elevatorHorizonticalState){
                     case OPEN:
                         wantedPos = ElevatorHorizonticalConstants.openPos;
@@ -33,17 +34,23 @@ public class ElevatorHorizontical {
                         wantedPos = ElevatorHorizonticalConstants.halfpos;
                         break;
                     case OVERRIDE:
-                        wantedPos += ElevatorHorizonticalConstants.overrideFactor * -rightJoyStick;
+                        wantedPos += (int) ElevatorHorizonticalConstants.overrideFactor * -rightJoyStick;
                         break;
                 }
-                pid.setWanted(wantedPos);
-                elevatorMotor.setPower(pid.update(getElevatorPos()));
+                if (isTeleop) {
+                    pidTeleOP.setWanted(wantedPos);
+                    elevatorMotor.setPower(pidTeleOP.update(getElevatorPos()));
+                } else {
+                    pidAuto.setWanted(wantedPos);
+                    elevatorMotor.setPower(pidAuto.update(getElevatorPos()));
+                }
     }
     public static boolean inPos(){
-        return wantedPos - ElevatorVerticalConstants.posTolerance
+        return wantedPos - ElevatorHorizonticalConstants.posTolerance
                 < getElevatorPos() &&
-                wantedPos + ElevatorVerticalConstants.posTolerance > getElevatorPos();
+                wantedPos + ElevatorHorizonticalConstants.posTolerance > getElevatorPos();
     }
     public static double getElevatorPos() {return elevatorMotor.getCurrentPosition() - resetVal;}
     public static void resetEncoder() {resetVal = elevatorMotor.getCurrentPosition();}
+     public static int getWantedPos(){return wantedPos;}
 }

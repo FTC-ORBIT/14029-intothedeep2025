@@ -61,7 +61,7 @@ public class autoTest extends LinearOpMode {
                     elevatorState = ElevatorVerticalState.INTAKE;
                     elevatorHorizonticalState = ElevatorHorizonticalState.HALF;
                     ElevatorVertical.operate(elevatorState, 0, 0);
-                    ElevatorHorizontical.opreate(elevatorHorizonticalState,0);
+                    ElevatorHorizontical.opreate(elevatorHorizonticalState,0, false);
                 }
 
                 flag = true;
