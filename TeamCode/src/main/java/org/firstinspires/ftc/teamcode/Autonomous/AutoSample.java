@@ -68,6 +68,12 @@ public class AutoSample extends LinearOpMode {
         TrajectoryActionBuilder sample1ToBasket = drive.actionBuilder(sample1)
                 .turnTo(redBasket.heading)
                 .strafeToLinearHeading(redBasket.position,redBasket.heading);
+        TrajectoryActionBuilder sample2ToBasket = drive.actionBuilder(sample2)
+                .turnTo(redBasket.heading)
+                .strafeToLinearHeading(redBasket.position,redBasket.heading);
+        TrajectoryActionBuilder sample3ToBasket = drive.actionBuilder(sample3)
+                .turnTo(redBasket.heading)
+                .strafeToLinearHeading(redBasket.position,redBasket.heading);
 
 
         waitForStart();
@@ -260,6 +266,14 @@ public class AutoSample extends LinearOpMode {
                 return Intake.leftIntakeServo.getPosition() <= Intake.POS_OUT_LEFT_INTAKE && Wrist.leftWristServo.getPosition() <= Wrist.POS_INTAKE_LEFT && !ElevatorHorizontical.inPos();
             }
         };
+    }
+//
+    public Action driveAction(Pose2d start, Pose2d end, MecanumDrive drivetrain){
+        TrajectoryActionBuilder drive = drivetrain.actionBuilder(start)
+                .turnTo(end.heading)
+                .strafeToLinearHeading(end.position,end.heading);
+        return drive.build();
+
     }
 
 
