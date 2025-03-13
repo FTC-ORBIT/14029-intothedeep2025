@@ -70,7 +70,7 @@ public class AutoSample extends LinearOpMode {
                 .strafeToLinearHeading(new Pose2d(-11,16.5 ,Math.toRadians(-45)).position,redBasket.heading);
         TrajectoryActionBuilder sample2ToBasket = drive.actionBuilder(sample2)
                 .turnTo(redBasket.heading)
-                .strafeToLinearHeading(redBasket.position,redBasket.heading);
+                .strafeToLinearHeading(new Pose2d(-3,1 ,Math.toRadians(-45)).position,redBasket.heading);
         TrajectoryActionBuilder sample3ToBasket = drive.actionBuilder(sample3)
                 .turnTo(redBasket.heading)
                 .strafeToLinearHeading(redBasket.position,redBasket.heading);
@@ -81,21 +81,14 @@ public class AutoSample extends LinearOpMode {
         //Actions.runBlocking(new SequentialAction(sampleIntake() , sampleTransfer()));
 //        Actions.runBlocking(depleteAction()));
 //        Actions.runBlocking(new SequentialAction(sampleIntake(),sampleTransfer(),sampleDeplete()));
-        Actions.runBlocking(startToBasket.build());
-        Actions.runBlocking(elevatorDeplete());
-        Actions.runBlocking(
-                new SequentialAction(
-                        basketToSample1.build(),
-                        sampleIntake()
-                )
-        );
-
+        Actions.runBlocking(new ParallelAction(startToBasket.build(), elevatorDeplete()));
+        Actions.runBlocking( new SequentialAction( basketToSample1.build(), sampleIntake()));
         Actions.runBlocking(sampleTransfer());
-        Actions.runBlocking(sample1ToBasket.build());
-        Actions.runBlocking(elevatorDeplete());
+        Actions.runBlocking(new ParallelAction(elevatorDeplete(), sample1ToBasket.build()));
         Actions.runBlocking(basketToSample2.build());
         Actions.runBlocking(sampleIntake());
         Actions.runBlocking(sampleTransfer());
+        Actions.runBlocking(new ParallelAction(sample2ToBasket.build(), elevatorDeplete()));
     }
 
 
@@ -105,16 +98,17 @@ public class AutoSample extends LinearOpMode {
                 new ParallelAction(
                         elevatorVericalByState(ElevatorVerticalState.DEPLETE, false),
                         new SequentialAction(
-                                armByState(ArmState.DEPLETE), armByState(ArmState.INTAKE), wristByState(WristState.DEPLETE) , elevatorVericalByState(ElevatorVerticalState.INTAKE, true))
+                                armByState(ArmState.DEPLETE),new SleepAction(0.5), armByState(ArmState.INTAKE), wristByState(WristState.DEPLETE) , elevatorVericalByState(ElevatorVerticalState.INTAKE, true))
                 ));
     }
 
     public Action sampleIntake(){
        return new SequentialAction(
-                new ParallelAction(elevatorHorizontalByState(ElevatorHorizonticalState.HALF),
-                        wristAction(WristState.INTAKE)
-                        ,intakeByState(IntakeState.IN)
-                ),new SleepAction(1.1)
+                new ParallelAction(
+                        elevatorHorizontalByState(ElevatorHorizonticalState.HALF),
+                        wristAction(WristState.INTAKE),
+                        intakeByState(IntakeState.IN)
+                ),new SleepAction(0.9)
         );
     }
 
@@ -129,7 +123,7 @@ public class AutoSample extends LinearOpMode {
                                 ,intakeByState(IntakeState.OFF)
                             )
                             ,new SequentialAction(elevatorHorizontalByState(ElevatorHorizonticalState.CLOSE)
-                            ,new SequentialAction(new SleepAction(1), intakeByState(IntakeState.OUT))
+                            ,new SequentialAction(intakeByState(IntakeState.OUT))
                             ,new SequentialAction(new SleepAction(0.2), intakeByState(IntakeState.OFF))
                             ,elevatorVericalByState(ElevatorVerticalState.OFF, true)
                         )
@@ -234,7 +228,7 @@ public class AutoSample extends LinearOpMode {
                 telemetryPacket.put("leftWrist",Intake.leftIntakeServo.getPosition());
                 Intake.operate(intakeState);
                 if (intakeState == IntakeState.IN) {
-                    return (Intake.rightIntakeServo.getPosition() < Intake.POS_IN_RIGHT_INTAKE);
+                    return Intake.rightIntakeServo.getPosition() < Intake.POS_IN_RIGHT_INTAKE;
                 } else if (intakeState == IntakeState.OFF) {
                     return Intake.rightIntakeServo.getPosition() < Intake.POS_OFF_RIGHT_INTAKE;
                 } else {
