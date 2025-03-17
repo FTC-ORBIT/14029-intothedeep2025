@@ -1,70 +1,118 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
+import androidx.annotation.NonNull;
+
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.robotSubSystems.Drivetrain.Drivetrain;
+import org.firstinspires.ftc.teamcode.roadRunner_1_0.MecanumDrive;
+import org.firstinspires.ftc.teamcode.robotSubSystems.Arm.Arm;
+import org.firstinspires.ftc.teamcode.robotSubSystems.ElevatorHorizontical.ElevatorHorizontical;
 import org.firstinspires.ftc.teamcode.robotSubSystems.ElevatorVertical.ElevatorVertical;
 import org.firstinspires.ftc.teamcode.robotSubSystems.ElevatorVertical.ElevatorVerticalState;
+import org.firstinspires.ftc.teamcode.robotSubSystems.Intake.Intake;
+import org.firstinspires.ftc.teamcode.robotSubSystems.Wrist.Wrist;
 
-@Autonomous(name="AutoSpecimen", group="Linear Opmode")
+@Autonomous(name = "autoSpecimen")
 public class AutoSpecimen extends LinearOpMode {
-
-    final double robotCenterToArm = 10;
-    Pose2d blueBasket = new Pose2d(64 - robotCenterToArm/Math.sqrt(2), 64 - robotCenterToArm/Math.sqrt(2),Math.toRadians(45));
-    Pose2d redBasket = new Pose2d(-64 + robotCenterToArm/Math.sqrt(2), -64 + robotCenterToArm/Math.sqrt(2),Math.toRadians(225));
-    Pose2d blueRobot2StartPosition = new Pose2d(-23.5, 64,Math.toRadians(270)).times(new Pose2d(0,0,Math.PI*2));
-    Pose2d blueRobot1StartPosition = new Pose2d(23.5, 64,Math.toRadians(270));
-    Pose2d redRobot1StartPosition = new Pose2d(-23.5,-64,Math.toRadians(90));
-    Pose2d redRobot2StartPosition = new Pose2d(23.5,-64,Math.toRadians(90));
-    Pose2d blueGamePiece1 = new Pose2d(-48 + robotCenterToArm, 26,Math.toRadians(180));
-    Pose2d blueGamePiece2 = new Pose2d(-58 + robotCenterToArm, 26,Math.toRadians(180));
-    Pose2d blueGamePiece3 = new Pose2d(-68 + robotCenterToArm, 26,Math.toRadians(180));
-    Pose2d yellow1GamePiece1 = new Pose2d(68, 26 + robotCenterToArm,Math.toRadians(270));
-    Pose2d yellow1GamePiece2 = new Pose2d(58, 26 + robotCenterToArm,Math.toRadians(270));
-    Pose2d yellow1GamePiece3 = new Pose2d(48, 26 + robotCenterToArm,Math.toRadians(270));
-    Pose2d redGamePiece1 = new Pose2d(68 - robotCenterToArm, -26, Math.toRadians(0));
-    Pose2d redGamePiece2 = new Pose2d(58 - robotCenterToArm, -26, Math.toRadians(0));
-    Pose2d redGamePiece3 = new Pose2d(48 - robotCenterToArm, -26, Math.toRadians(0));
-    Pose2d yellow2GamePiece1 = new Pose2d(-68, -26 - robotCenterToArm,Math.toRadians(90));
-    Pose2d yellow2GamePiece2 = new Pose2d(-58, -26 - robotCenterToArm,Math.toRadians(90));
-    Pose2d yellow2GamePiece3 = new Pose2d(-48, -26 - robotCenterToArm,Math.toRadians(90));
-
-
-    public void runOpMode() {
-        Drivetrain.init(hardwareMap);
+    ElevatorVerticalState lastelevatorVerticalState = ElevatorVerticalState.OFF;
+    boolean isUp= true;boolean isUp1= true;
+    @Override
+    public void runOpMode() throws InterruptedException {
+        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0,63,0));
         ElevatorVertical.init(hardwareMap);
-        ElevatorVerticalState elevatorState = ElevatorVerticalState.INTAKE;
+        Arm.init(hardwareMap);
+        Intake.init(hardwareMap);
+        Wrist.init(hardwareMap);
+        ElevatorHorizontical.init(hardwareMap);
+
+
+
+        TrajectoryActionBuilder firstBuilder = drive.actionBuilder(new Pose2d(0, 63, 0)).
+                strafeToLinearHeading(new Pose2d(32, 63, 0).position, 0);
+        TrajectoryActionBuilder secondBuilder = drive.actionBuilder(new Pose2d(32, 63, 0)).
+                strafeToLinearHeading(new Pose2d(10, 90, 0).position, 0)
+                .turnTo(Math.toRadians(180));
+        TrajectoryActionBuilder thirdBuilder = drive.actionBuilder(new Pose2d(10, 90, Math.toRadians(180))).
+                strafeToLinearHeading(new Vector2d(0,105),Math.toRadians(180))
+                .strafeToLinearHeading(new Vector2d(-5,105),Math.toRadians(180));
+        TrajectoryActionBuilder fourthBuilder = drive.actionBuilder(new Pose2d(-5, 105, Math.toRadians(180))).
+                strafeTo(new Pose2d(15, 63, Math.toRadians(180)).position)
+                .turnTo(Math.toRadians(0))
+                .strafeTo(new Pose2d(15,63,0).position)
+                .strafeTo(new Pose2d(32,67,0).position);
+        TrajectoryActionBuilder fifthBuilder = drive.actionBuilder(new Pose2d(0, -31, 0))
+                .strafeToLinearHeading(RotatedPose2d.rotate90deg(new Pose2d(-35, -20, 0)).position, 0).turnTo(Math.toRadians(90)).turnTo(Math.toRadians(180))
+                .strafeToLinearHeading(RotatedPose2d.rotate90deg(new Pose2d(-35, -50, 0)).position, Math.toRadians(180))
+                .strafeToLinearHeading(RotatedPose2d.rotate90deg(new Pose2d(-50, -50, 0)).position, Math.toRadians(180))
+                .strafeToLinearHeading(RotatedPose2d.rotate90deg(new Pose2d(-50, -6, 0)).position, Math.toRadians(180))
+                .strafeToLinearHeading(RotatedPose2d.rotate90deg(new Pose2d(-50, -50, 0)).position, Math.toRadians(180))
+                .strafeToLinearHeading(RotatedPose2d.rotate90deg(new Pose2d(-66, -50, 0)).position, Math.toRadians(180))
+                .strafeToLinearHeading(RotatedPose2d.rotate90deg(new Pose2d(-66, -6, 0)).position, Math.toRadians(180))
+                .strafeToLinearHeading(RotatedPose2d.rotate90deg(new Pose2d(-66, -50, 0)).position, Math.toRadians(180))
+                .strafeToLinearHeading(RotatedPose2d.rotate90deg(new Pose2d(-75, -50, 0)).position, Math.toRadians(180))
+                .strafeToLinearHeading(RotatedPose2d.rotate90deg(new Pose2d(-75, -6, 0)).position, Math.toRadians(180));
 
         waitForStart();
-        boolean flag = false;
-        while (isStarted() & flag == false) {
-            double start = System.currentTimeMillis();
-            while (System.currentTimeMillis() - start < 2500) {
-                if (System.currentTimeMillis() - start < 1200) {
-                    Drivetrain.driveByTime(0.3);
-                }
-//                if (System.currentTimeMillis() - start < 1000 && System.currentTimeMillis() - start > 800) {
-//                    Drivetrain.driveByTime(0.1);
-//                }
-                if (System.currentTimeMillis() - start < 1600) {
-                    elevatorState = ElevatorVerticalState.PUTSPECIMEN;
-                    ElevatorVertical.operate(elevatorState, 0, 0);
 
-                }
-                if (System.currentTimeMillis() - start > 1700 && System.currentTimeMillis() - start < 1800) {
-                    elevatorState = ElevatorVerticalState.SPECIMEN;
-                    ElevatorVertical.operate(elevatorState, 0, 0);
-                }
-
-                flag = true;
-            }
-
-//        start = System.currentTimeMillis();
-//        while(System.currentTimeMillis()-start<100){
-//            Drivetrain.driveByTime(0.1);
-//        }
-        }
+        Actions.runBlocking(
+                new ParallelAction(
+                        firstBuilder.build()
+                        , elevatorVericalByState(ElevatorVerticalState.PUTSPECIMEN, true)
+                )
+        );
+        Actions.runBlocking(
+                new SequentialAction(
+                        new ParallelAction(
+                                secondBuilder.build()
+                                , elevatorVericalByState(ElevatorVerticalState.INTAKE,true)
+                        )
+                        ,new ParallelAction(
+                                thirdBuilder.build()
+                                , elevatorVericalByState(ElevatorVerticalState.SPECIMEN,true)
+                        )
+                )
+        );
+        Actions.runBlocking(
+                new ParallelAction(
+                        fourthBuilder.build(),
+                        elevatorVericalByState(ElevatorVerticalState.PUTSPECIMEN,true)
+                )
+        );
     }
+    public Action elevatorVericalByState(final ElevatorVerticalState elevatorVerticalState, boolean stopAfterAction){
+        return new Action() {
+            boolean initialized = false;
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                if (!initialized) {
+                    lastelevatorVerticalState = elevatorVerticalState;
+                    initialized = true;
+                }
+                ElevatorVertical.operate(elevatorVerticalState,0,0);
+                telemetryPacket.put("elevatorVerticalState",elevatorVerticalState);
+                telemetryPacket.put("lastElevatorVerticalState",lastelevatorVerticalState);
+                telemetryPacket.put("elevator pos", ElevatorVertical.getElevatorPos());
+                telemetryPacket.put("wantedPos", ElevatorVertical.getWantedPos());
+                telemetryPacket.put("inPos",ElevatorVertical.inPos());
+                if (elevatorVerticalState ==ElevatorVerticalState.OFF) {
+                    return false;
+                }
+                if (stopAfterAction) {
+                    return !ElevatorVertical.inPos();
+                }else{
+                    return lastelevatorVerticalState==elevatorVerticalState;
+                }
+            }
+        };
+    }
+
 }

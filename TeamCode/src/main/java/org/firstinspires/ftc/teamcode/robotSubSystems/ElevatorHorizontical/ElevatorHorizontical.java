@@ -50,6 +50,9 @@ public class ElevatorHorizontical {
                 < getElevatorPos() &&
                 wantedPos + ElevatorHorizonticalConstants.posTolerance > getElevatorPos();
     }
+    public static boolean atLeastPose(){
+        return wantedPos + ElevatorHorizonticalConstants.posTolerance > getElevatorPos();
+    }
     public static double getElevatorPos() {return elevatorMotor.getCurrentPosition() - resetVal;}
     public static void resetEncoder() {resetVal = elevatorMotor.getCurrentPosition();}
      public static int getWantedPos(){return wantedPos;}

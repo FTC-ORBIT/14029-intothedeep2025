@@ -12,7 +12,7 @@ public class ElevatorVerticalConstants {
     public static final double changeLevelMinSpeed = 0;
 // -------------------------------------------------------------------
 
-    public static int IntakePos = 85;
+    public static int IntakePos = 90;
 
     public static int SpecimenPos = 280;
     public static int PutSpecimenPos = 1600;
@@ -20,7 +20,7 @@ public class ElevatorVerticalConstants {
 
     public static final int MAX_OPEN_POS = 2300;
 
-    public static final int posTolerance = 15;
+    public static final int posTolerance = 30;
 
 
 }

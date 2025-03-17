@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.robotSubSystems.ElevatorHorizontical;
 
 public class ElevatorHorizonticalConstants {
-    public static final float KpAuto = 0.9f; //0.0080f
+    public static final float KpAuto = 0.8f; //0.0080f
     public static final float KpTeleop = 0.008f;
     public static final float Ki = 0;
     public static final float Kd = 0;

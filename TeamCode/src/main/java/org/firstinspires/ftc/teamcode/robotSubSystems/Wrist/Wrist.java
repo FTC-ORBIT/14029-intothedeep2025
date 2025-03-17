@@ -5,8 +5,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 public class Wrist {
 
-    public static final double POS_TRANSFER_LEFT = 0.03;
-    public static final double POS_TRANSFER_RIGHT = 0.85;
+    public static final double POS_TRANSFER_LEFT = 0.02;
+    public static final double POS_TRANSFER_RIGHT = 0.86;
     public static final double POS_INTAKE_LEFT = 0.678; // 0.677
     public static final double POS_INTAKE_RIGHT = 0.17; //0.18
 
