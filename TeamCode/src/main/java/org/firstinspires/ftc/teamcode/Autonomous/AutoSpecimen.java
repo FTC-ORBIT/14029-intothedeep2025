@@ -27,7 +27,7 @@ public class AutoSpecimen extends LinearOpMode {
     boolean isUp= true;boolean isUp1= true;
     @Override
     public void runOpMode() throws InterruptedException {
-        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0,63,0));
+        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0,63+5,0));
         ElevatorVertical.init(hardwareMap);
         Arm.init(hardwareMap);
         Intake.init(hardwareMap);
@@ -47,8 +47,8 @@ public class AutoSpecimen extends LinearOpMode {
         TrajectoryActionBuilder fourthBuilder = drive.actionBuilder(new Pose2d(-5, 105, Math.toRadians(180))).
                 strafeTo(new Pose2d(15, 63, Math.toRadians(180)).position)
                 .turnTo(Math.toRadians(0))
-                .strafeTo(new Pose2d(15,63,0).position)
-                .strafeTo(new Pose2d(32,67,0).position);
+                .strafeTo(new Pose2d(15,63+5,0).position)
+                .strafeTo(new Pose2d(32,63+5,0).position);
         TrajectoryActionBuilder fifthBuilder = drive.actionBuilder(new Pose2d(0, -31, 0))
                 .strafeToLinearHeading(RotatedPose2d.rotate90deg(new Pose2d(-35, -20, 0)).position, 0).turnTo(Math.toRadians(90)).turnTo(Math.toRadians(180))
                 .strafeToLinearHeading(RotatedPose2d.rotate90deg(new Pose2d(-35, -50, 0)).position, Math.toRadians(180))

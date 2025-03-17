@@ -35,8 +35,8 @@ public class AutoSample extends LinearOpMode {
     ElevatorVerticalState lastelevatorVerticalState = ElevatorVerticalState.OFF;
 
     Pose2d redBasket = new Pose2d(-3,25 ,Math.toRadians(-45));
-    Pose2d sample1 = new Pose2d(-13, 30/*27*/,Math.toRadians(-13));
-    Pose2d sample2 = new Pose2d(-13, 20/*18*/,Math.toRadians(0));
+    Pose2d sample1 = new Pose2d(-16/*-13*/, 27.5/*27*/,Math.toRadians(-13));
+    Pose2d sample2 = new Pose2d(-13, 18/*18*/,Math.toRadians(0));
     Pose2d sample3 = new Pose2d(-14, 23,Math.toRadians(22));
     Pose2d startPos = new Pose2d(0, 0,Math.toRadians(0));
 
@@ -54,31 +54,35 @@ public class AutoSample extends LinearOpMode {
 
 
         TrajectoryActionBuilder startToBasket = drive.actionBuilder(startPos)
-                .strafeToLinearHeading(redBasket.position,startPos.heading)
+                .strafeTo(redBasket.position)
                 .turnTo(redBasket.heading);
         TrajectoryActionBuilder basketToSample1 = drive.actionBuilder(redBasket)
                 .turnTo(sample1.heading)
-                .strafeToLinearHeading(sample1.position,sample1.heading);
+                .strafeTo(sample1.position);
         TrajectoryActionBuilder basketToSample2 = drive.actionBuilder(redBasket)
                 .turnTo(sample2.heading)
-                .strafeToLinearHeading(sample2.position,sample2.heading);
+                .strafeTo(sample2.position);
         TrajectoryActionBuilder basketToSample3 = drive.actionBuilder(redBasket)
                 .turnTo(sample3.heading)
-                .strafeToLinearHeading(sample3.position,sample3.heading);
+                .strafeTo(sample3.position);
         TrajectoryActionBuilder sample1ToBasket = drive.actionBuilder(sample1)
                 .turnTo(redBasket.heading)
                 //.strafeToLinearHeading(new Pose2d(-11,16.5 ,Math.toRadians(-45)).position,redBasket.heading);
-                .strafeToLinearHeading(redBasket.position,redBasket.heading);
+                .strafeTo(redBasket.position);
         TrajectoryActionBuilder sample2ToBasket = drive.actionBuilder(sample2)
                 .turnTo(redBasket.heading)
                 //.strafeToLinearHeading(new Pose2d(-14,-10 ,Math.toRadians(-45)).position,redBasket.heading);
-                .strafeToLinearHeading(redBasket.position,redBasket.heading);
+                .strafeTo(redBasket.position);
         TrajectoryActionBuilder sample3ToBasket = drive.actionBuilder(sample3)
                 .turnTo(redBasket.heading)
-                .strafeToLinearHeading(redBasket.position,redBasket.heading);
+                .strafeTo(redBasket.position);
 
 
         waitForStart();
+        printCurrentPos(drive);
+
+
+
 //        Actions.runBlocking(actionBuilder.build());
         //Actions.runBlocking(new SequentialAction(sampleIntake() , sampleTransfer()));
 //        Actions.runBlocking(depleteAction()));
@@ -89,24 +93,35 @@ public class AutoSample extends LinearOpMode {
                         , elevatorDeplete()
                 )
         );
+        printCurrentPos(drive);
+
         Actions.runBlocking(
                 new SequentialAction(
                         basketToSample1.build()
                         , sampleIntake()
                 )
         );
+        printCurrentPos(drive);
+
         Actions.runBlocking(
                 sampleTransfer()
         );
+        printCurrentPos(drive);
+
         Actions.runBlocking(
                 new ParallelAction(elevatorDeplete()
                         , sample1ToBasket.build()
                 )
         );
+        printCurrentPos(drive);
         Actions.runBlocking(basketToSample2.build());
+        printCurrentPos(drive);
         Actions.runBlocking(sampleIntake());
+        printCurrentPos(drive);
         Actions.runBlocking(sampleTransfer());
+        printCurrentPos(drive);
         Actions.runBlocking(new ParallelAction(sample2ToBasket.build(), elevatorDeplete()));
+        printCurrentPos(drive);
     }
 
 
@@ -302,6 +317,14 @@ public class AutoSample extends LinearOpMode {
                 .strafeToLinearHeading(end.position,end.heading);
         return drive.build();
 
+    }
+    public void printCurrentPos(MecanumDrive drive){
+        drive.updatePoseEstimate();
+        telemetry.addData("x", drive.pose.position.x);
+        telemetry.addData("y", drive.pose.position.y);
+        telemetry.addData("heading (deg)", Math.toDegrees(drive.pose.heading.toDouble()));
+        telemetry.update();
+        while(!gamepad1.a);
     }
 
 
