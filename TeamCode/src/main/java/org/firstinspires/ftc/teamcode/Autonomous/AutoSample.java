@@ -272,9 +272,6 @@ public class AutoSample extends LinearOpMode {
                 return false;
             }
         };
-
-
-
     }
 
 //    public Action intakeByState(IntakeState intakeState){

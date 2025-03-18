@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.Utils.PID;
 
 public class ElevatorHorizontical {
-    private static DcMotor elevatorMotor;
+    public static DcMotor elevatorMotor;
     private static PID pidTeleOP = new PID(ElevatorHorizonticalConstants.KpTeleop,ElevatorHorizonticalConstants.Ki,ElevatorHorizonticalConstants.Kd,ElevatorHorizonticalConstants.Kf,ElevatorHorizonticalConstants.iZone,ElevatorHorizonticalConstants.maxSpeed,ElevatorHorizonticalConstants.minSpeed);
 
     private static PID pidAuto = new PID(ElevatorHorizonticalConstants.KpAuto,ElevatorHorizonticalConstants.Ki,ElevatorHorizonticalConstants.Kd,ElevatorHorizonticalConstants.Kf,ElevatorHorizonticalConstants.iZone,ElevatorHorizonticalConstants.maxSpeed,ElevatorHorizonticalConstants.minSpeed);

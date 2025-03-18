@@ -21,10 +21,12 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.roadRunner_1_0.MecanumDrive;
 import org.firstinspires.ftc.teamcode.robotSubSystems.Arm.Arm;
 import org.firstinspires.ftc.teamcode.robotSubSystems.ElevatorHorizontical.ElevatorHorizontical;
+import org.firstinspires.ftc.teamcode.robotSubSystems.ElevatorHorizontical.ElevatorHorizonticalState;
 import org.firstinspires.ftc.teamcode.robotSubSystems.ElevatorVertical.ElevatorVertical;
 import org.firstinspires.ftc.teamcode.robotSubSystems.ElevatorVertical.ElevatorVerticalState;
 import org.firstinspires.ftc.teamcode.robotSubSystems.Intake.Intake;
 import org.firstinspires.ftc.teamcode.robotSubSystems.Wrist.Wrist;
+import org.firstinspires.ftc.teamcode.robotSubSystems.Wrist.WristState;
 
 @Autonomous(name = "autoSpecimen")
 public class AutoSpecimen extends LinearOpMode {
@@ -43,7 +45,7 @@ public class AutoSpecimen extends LinearOpMode {
         ElevatorHorizontical.init(hardwareMap);
 
         VelConstraint velConstraint = new TranslationalVelConstraint(100);
-        AccelConstraint accelConstraint = new ProfileAccelConstraint(-52,87);
+        AccelConstraint accelConstraint = new ProfileAccelConstraint(-53,88);
 
         TrajectoryActionBuilder firstBuilder = drive.actionBuilder(new Pose2d(0, 63, 0)).
                 strafeTo(new Pose2d(32, 63, 0).position, velConstraint, accelConstraint);
@@ -78,7 +80,7 @@ public class AutoSpecimen extends LinearOpMode {
         TrajectoryActionBuilder seventhBuilder = drive.actionBuilder(new Pose2d(0, 63+40+10+8-12, Math.toRadians(180))).
                 strafeToLinearHeading(new Vector2d(10,65),Math.toRadians(180), velConstraint, accelConstraint)
                 .turnTo(0)
-                .strafeTo(new Vector2d(35,70), velConstraint, accelConstraint);
+                .strafeTo(new Vector2d(36,70), velConstraint, accelConstraint);
         TrajectoryActionBuilder eighthBuilder = drive.actionBuilder(new Pose2d(32, 63, Math.toRadians(0))).
                 strafeTo(new Vector2d(5+8,63+40+10+8-12), velConstraint, accelConstraint)
                 .turnTo(Math.toRadians(180))
@@ -86,20 +88,20 @@ public class AutoSpecimen extends LinearOpMode {
         TrajectoryActionBuilder ninthBuilder = drive.actionBuilder(new Pose2d(0, 0, Math.toRadians(180))).strafeTo(new Vector2d(0,10));//.turnTo(0);//.strafeTo(new Vector2d(-36,36)); // 11 , -36
         TrajectoryActionBuilder tenthBuilder = drive.actionBuilder(new Pose2d(0, 63+40+10+8-12, Math.toRadians(180))).
                 strafeToLinearHeading(new Vector2d(15,65),Math.toRadians(180), velConstraint, accelConstraint).turnTo(0)
-                .strafeTo(new Vector2d(45,70));
+                .strafeTo(new Vector2d(45,69));
 
 
         waitForStart();
+        Actions.runBlocking( new ParallelAction( elevatorPower(true), wristByState(WristState.TRANSFER),
 
-            Actions.runBlocking(
+                new SequentialAction(
                     //first move and putting the first specimen
                     new ParallelAction(
                             elevatorVericalByState(ElevatorVerticalState.PUTSPECIMEN, false)
                             ,firstBuilder.build()
                             , new SequentialAction( new SleepAction(1.5),elevatorVericalByState(ElevatorVerticalState.SPECIMEN, true))
-                    )
-            );
-            Actions.runBlocking(
+                    ),
+
                 new SequentialAction(
                         // going to move the sample from the field to the human player area
                         fifthBuilder.build(),
@@ -111,17 +113,13 @@ public class AutoSpecimen extends LinearOpMode {
                                 new SleepAction(1.5),elevatorVericalByState(ElevatorVerticalState.PUTSPECIMEN, true)
                             )
                         )
-                )
-            );
-            Actions.runBlocking(
+                ),
                     new ParallelAction(
                             //put the specimen on the bar
                             seventhBuilder.build(),
                             elevatorVericalByState(ElevatorVerticalState.PUTSPECIMEN, false),
                             new SequentialAction(new SleepAction(5), elevatorVericalByState(ElevatorVerticalState.SPECIMEN, true))
-                    )
-            );
-            Actions.runBlocking(
+                    ),
                     //picking up the next specimen from the human player
                     new ParallelAction(
                             eighthBuilder.build(),
@@ -129,68 +127,14 @@ public class AutoSpecimen extends LinearOpMode {
                             new SequentialAction(
                                     new SleepAction(4.5), elevatorVericalByState(ElevatorVerticalState.PUTSPECIMEN, true)
                             )
-                    )
-            );
-            Actions.runBlocking(
+                    ),
                     new ParallelAction(
                             tenthBuilder.build(),
                             elevatorVericalByState(ElevatorVerticalState.PUTSPECIMEN,false),
                             new SequentialAction(
                                     new SleepAction(5),elevatorVericalByState(ElevatorVerticalState.INTAKE, true)
                             )
-                    )
-            );
-
-//        Actions.runBlocking(
-//                new SequentialAction(
-//                        new ParallelAction(
-//                            sixthBuilder.build()
-//                            ,elevatorVericalByState(ElevatorVerticalState.SPECIMEN,true),
-//                                new SleepAction(2)
-//                        ),printElevatorCurrent()
-//                        ,new ParallelAction(
-//                            seventhBuilder.build()
-//                            ,new SequentialAction(elevatorVericalByState(ElevatorVerticalState.ZERO,true),elevetorVerticalReset(),elevetorVerticalReset() ,elevatorVericalByState(ElevatorVerticalState.PUTSPECIMEN,true))
-//                        ),new ParallelAction(
-//                                eighthBuilder.build()
-//                                ,elevatorVericalByState(ElevatorVerticalState.SPECIMEN,true)
-//                        ),new ParallelAction(
-//                                seventhBuilder.build()
-//                                ,elevatorVericalByState(ElevatorVerticalState.PUTSPECIMEN,true)
-//                        )
-//
-//
-//                )
-//
-//        );
-//        Actions.runBlocking(
-//                new SequentialAction(
-//                        new ParallelAction(
-//                                secondBuilder.build()
-//                                , elevatorVericalByState(ElevatorVerticalState.INTAKE,true)
-//                        )
-//                        ,new ParallelAction(
-//                                thirdBuilder.build()
-//                                , elevatorVericalByState(ElevatorVerticalState.SPECIMEN,true)
-//                        )
-//                )
-//        );
-//        Actions.runBlocking(
-//                new ParallelAction(
-//                        fourthBuilder.build(),
-//                        elevatorVericalByState(ElevatorVerticalState.PUTSPECIMEN,true)
-//                )
-//        );
-    }
-    public Action elevetorVerticalReset(){
-        return new Action() {
-
-            @Override
-            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                ElevatorVertical.resetEncoder();
-                return false;
-            }
-        };
+                    )), new SequentialAction(new SleepAction(29), elevatorPower(false))));
     }
     public Action elevatorVericalByState(final ElevatorVerticalState elevatorVerticalState, boolean stopAfterAction) {
         return new Action() {
@@ -219,12 +163,37 @@ public class AutoSpecimen extends LinearOpMode {
             }
         };
     }
-    public Action printElevatorCurrent() {
+    public Action elevatorHorizontalByState(final ElevatorHorizonticalState elevatorHorizonticalState, boolean isOpening){
         return new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                telemetry.addData("elevatorCurrent", ElevatorVertical.getElevatorPos());
+                ElevatorHorizontical.opreate(elevatorHorizonticalState,0, false);
+                telemetryPacket.put("elevatorHorizontalState",elevatorHorizonticalState);
+                telemetryPacket.put("elevatorHpos", ElevatorHorizontical.getElevatorPos());
+                telemetryPacket.put("wantedHPos", ElevatorHorizontical.getWantedPos());
+                telemetryPacket.put("inPosH",ElevatorHorizontical.inPos());
+                if (isOpening) {
+                    return !ElevatorHorizontical.atLeastPose();
+                }
+                return  !ElevatorHorizontical.inPos();
+            }
+        };
+    }
+    public Action wristByState(final WristState wristState) {
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                Wrist.operate(wristState);
                 return false;
+            }
+        };
+    }
+    public Action elevatorPower(boolean isOn) {
+        return  new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                ElevatorHorizontical.elevatorMotor.setPower(-0.2);
+                return isOn;
             }
         };
     }
