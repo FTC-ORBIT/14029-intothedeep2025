@@ -49,6 +49,8 @@ public class ElevatorVertical {
                     case DEPLETE:
                         wantedPos = ElevatorVerticalConstants.DepletePos;
                         break;
+                    case ZERO:
+                        wantedPos = ElevatorVerticalConstants.zeroPos;
                 }
                 lastWantedState = wantedState;
             }else {
@@ -75,6 +77,7 @@ public class ElevatorVertical {
     public static int getElevatorPos() {
         return leftMotor.getCurrentPosition() - encoderResetValL;
     }
+
 
     public static int getWantedPos(){return wantedPos;}
 
