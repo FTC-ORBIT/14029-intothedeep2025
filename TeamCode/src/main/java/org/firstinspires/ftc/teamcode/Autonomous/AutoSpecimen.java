@@ -42,11 +42,11 @@ public class AutoSpecimen extends LinearOpMode {
         Wrist.init(hardwareMap);
         ElevatorHorizontical.init(hardwareMap);
 
-        VelConstraint velConstraint = new TranslationalVelConstraint(60);
-        AccelConstraint accelConstraint = new ProfileAccelConstraint(-40,65);
+        VelConstraint velConstraint = new TranslationalVelConstraint(100);
+        AccelConstraint accelConstraint = new ProfileAccelConstraint(-52,87);
 
         TrajectoryActionBuilder firstBuilder = drive.actionBuilder(new Pose2d(0, 63, 0)).
-                strafeTo(new Pose2d(32, 63, 0).position);
+                strafeTo(new Pose2d(32, 63, 0).position, velConstraint, accelConstraint);
         TrajectoryActionBuilder secondBuilder = drive.actionBuilder(new Pose2d(32, 63, 0)).
                 strafeToLinearHeading(new Pose2d(10, 90, 0).position, 0)
                 .turnTo(Math.toRadians(180));
@@ -60,11 +60,11 @@ public class AutoSpecimen extends LinearOpMode {
                 .strafeTo(new Pose2d(32,63+5,0).position);
 
         TrajectoryActionBuilder fifthBuilder = drive.actionBuilder(new Pose2d(32, 63, 0))
-                        .strafeTo(new Vector2d(32-15,63+40))
+                        .strafeTo(new Vector2d(32-17,63+40), velConstraint, accelConstraint)
                 .turnTo(Math.toRadians(180))
-                .strafeTo(new Vector2d(32+20, 63+40))
-                .strafeTo(new Vector2d(32+20, 63+40+10))
-                .strafeTo(new Vector2d(5, 63+40+10+8))
+                .strafeTo(new Vector2d(32+19, 63+40), velConstraint, accelConstraint)
+                .strafeTo(new Vector2d(32+19, 63+40+10), velConstraint, accelConstraint)
+                .strafeTo(new Vector2d(5, 63+40+10+8), velConstraint, accelConstraint)
                 ;
 
         TrajectoryActionBuilder spline = drive.actionBuilder(new Pose2d(32, 63, 0))
@@ -72,68 +72,74 @@ public class AutoSpecimen extends LinearOpMode {
 
 
 
-        TrajectoryActionBuilder sixthBuilder = drive.actionBuilder(new Pose2d(5, 63+40+10+8, Math.toRadians(180))).
-        strafeTo(new Vector2d(5+8, 63+40+10+8-12)).strafeTo(new Vector2d(-5, 63+40+10+8-12));
+        TrajectoryActionBuilder sixthBuilder = drive.actionBuilder(new Pose2d(5, 63+40+10+8, Math.toRadians(180)))
+                .strafeTo(new Vector2d(5+8, 63+40+10+8-12), velConstraint, accelConstraint)
+                .strafeTo(new Vector2d(-5, 63+40+10+8-12));
         TrajectoryActionBuilder seventhBuilder = drive.actionBuilder(new Pose2d(0, 63+40+10+8-12, Math.toRadians(180))).
-                strafeToLinearHeading(new Vector2d(10,65),Math.toRadians(180)).turnTo(0).strafeTo(new Vector2d(42,70));
+                strafeToLinearHeading(new Vector2d(10,65),Math.toRadians(180), velConstraint, accelConstraint)
+                .turnTo(0)
+                .strafeTo(new Vector2d(35,70), velConstraint, accelConstraint);
         TrajectoryActionBuilder eighthBuilder = drive.actionBuilder(new Pose2d(32, 63, Math.toRadians(0))).
-                strafeTo(new Vector2d(5+8,63+40+10+8-12)).turnTo(Math.toRadians(180)).strafeTo(new Vector2d(-5,63+40+10+8-12));
+                strafeTo(new Vector2d(5+8,63+40+10+8-12), velConstraint, accelConstraint)
+                .turnTo(Math.toRadians(180))
+                .strafeTo(new Vector2d(-5,63+40+10+8-12));
         TrajectoryActionBuilder ninthBuilder = drive.actionBuilder(new Pose2d(0, 0, Math.toRadians(180))).strafeTo(new Vector2d(0,10));//.turnTo(0);//.strafeTo(new Vector2d(-36,36)); // 11 , -36
         TrajectoryActionBuilder tenthBuilder = drive.actionBuilder(new Pose2d(0, 63+40+10+8-12, Math.toRadians(180))).
-                strafeToLinearHeading(new Vector2d(15,65),Math.toRadians(180)).turnTo(0).strafeTo(new Vector2d(42,70));
+                strafeToLinearHeading(new Vector2d(15,65),Math.toRadians(180), velConstraint, accelConstraint).turnTo(0)
+                .strafeTo(new Vector2d(45,70));
 
 
         waitForStart();
 
-        Actions.runBlocking(
-                //first move and putting the first specimen
-                new ParallelAction(
-                        firstBuilder.build(),
-                        elevatorVericalByState(ElevatorVerticalState.PUTSPECIMEN, false)
-                        , new SequentialAction( new SleepAction(1.7),elevatorVericalByState(ElevatorVerticalState.SPECIMEN, true))
-                )
-        );
-        Actions.runBlocking(
-            new SequentialAction(
-                    // going to move the sample from the field to the human player area
-                    fifthBuilder.build(),
+            Actions.runBlocking(
+                    //first move and putting the first specimen
                     new ParallelAction(
-                            //pick up the second specimen from the human player
-                            sixthBuilder.build(),
-                            elevatorVericalByState(ElevatorVerticalState.SPECIMEN, false),
-                        new SequentialAction(
-                            new SleepAction(2),elevatorVericalByState(ElevatorVerticalState.PUTSPECIMEN, true)
-                        )
+                            elevatorVericalByState(ElevatorVerticalState.PUTSPECIMEN, false)
+                            ,firstBuilder.build()
+                            , new SequentialAction( new SleepAction(1.5),elevatorVericalByState(ElevatorVerticalState.SPECIMEN, true))
                     )
-            )
-        );
-        Actions.runBlocking(
-                new ParallelAction(
-                        //put the specimen on the bar
-                        seventhBuilder.build(),
-                        elevatorVericalByState(ElevatorVerticalState.PUTSPECIMEN, false),
-                        new SequentialAction(new SleepAction(6), elevatorVericalByState(ElevatorVerticalState.SPECIMEN, true))
-                )
-        );
-        Actions.runBlocking(
-                //picking up the next specimen from the human player
-                new ParallelAction(
-                        eighthBuilder.build(),
-                        elevatorVericalByState(ElevatorVerticalState.SPECIMEN, false),
-                        new SequentialAction(
-                                new SleepAction(5), elevatorVericalByState(ElevatorVerticalState.PUTSPECIMEN, true)
+            );
+            Actions.runBlocking(
+                new SequentialAction(
+                        // going to move the sample from the field to the human player area
+                        fifthBuilder.build(),
+                        new ParallelAction(
+                                //pick up the second specimen from the human player
+                                sixthBuilder.build(),
+                                elevatorVericalByState(ElevatorVerticalState.SPECIMEN, false),
+                            new SequentialAction(
+                                new SleepAction(1.5),elevatorVericalByState(ElevatorVerticalState.PUTSPECIMEN, true)
+                            )
                         )
                 )
-        );
-        Actions.runBlocking(
-                new ParallelAction(
-                        tenthBuilder.build(),
-                        elevatorVericalByState(ElevatorVerticalState.PUTSPECIMEN,false),
-                        new SequentialAction(
-                                new SleepAction(4),elevatorVericalByState(ElevatorVerticalState.INTAKE, true)
-                        )
-                )
-        );
+            );
+            Actions.runBlocking(
+                    new ParallelAction(
+                            //put the specimen on the bar
+                            seventhBuilder.build(),
+                            elevatorVericalByState(ElevatorVerticalState.PUTSPECIMEN, false),
+                            new SequentialAction(new SleepAction(5), elevatorVericalByState(ElevatorVerticalState.SPECIMEN, true))
+                    )
+            );
+            Actions.runBlocking(
+                    //picking up the next specimen from the human player
+                    new ParallelAction(
+                            eighthBuilder.build(),
+                            elevatorVericalByState(ElevatorVerticalState.SPECIMEN, false),
+                            new SequentialAction(
+                                    new SleepAction(4.5), elevatorVericalByState(ElevatorVerticalState.PUTSPECIMEN, true)
+                            )
+                    )
+            );
+            Actions.runBlocking(
+                    new ParallelAction(
+                            tenthBuilder.build(),
+                            elevatorVericalByState(ElevatorVerticalState.PUTSPECIMEN,false),
+                            new SequentialAction(
+                                    new SleepAction(5),elevatorVericalByState(ElevatorVerticalState.INTAKE, true)
+                            )
+                    )
+            );
 
 //        Actions.runBlocking(
 //                new SequentialAction(
