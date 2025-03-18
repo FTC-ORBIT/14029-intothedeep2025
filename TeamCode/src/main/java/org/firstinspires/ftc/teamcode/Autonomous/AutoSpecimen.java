@@ -3,13 +3,17 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.AccelConstraint;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.ProfileAccelConstraint;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.VelConstraint;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -26,6 +30,9 @@ import org.firstinspires.ftc.teamcode.robotSubSystems.Wrist.Wrist;
 public class AutoSpecimen extends LinearOpMode {
     ElevatorVerticalState lastelevatorVerticalState = ElevatorVerticalState.OFF;
     boolean isUp= true;boolean isUp1= true;
+
+
+
     @Override
     public void runOpMode() throws InterruptedException {
         MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0,63,0));
@@ -35,7 +42,8 @@ public class AutoSpecimen extends LinearOpMode {
         Wrist.init(hardwareMap);
         ElevatorHorizontical.init(hardwareMap);
 
-
+        VelConstraint velConstraint = new TranslationalVelConstraint(60);
+        AccelConstraint accelConstraint = new ProfileAccelConstraint(-40,65);
 
         TrajectoryActionBuilder firstBuilder = drive.actionBuilder(new Pose2d(0, 63, 0)).
                 strafeTo(new Pose2d(32, 63, 0).position);
@@ -50,6 +58,7 @@ public class AutoSpecimen extends LinearOpMode {
                 .turnTo(Math.toRadians(0))
                 .strafeTo(new Pose2d(15,63+5,0).position)
                 .strafeTo(new Pose2d(32,63+5,0).position);
+
         TrajectoryActionBuilder fifthBuilder = drive.actionBuilder(new Pose2d(32, 63, 0))
                         .strafeTo(new Vector2d(32-15,63+40))
                 .turnTo(Math.toRadians(180))
@@ -57,6 +66,12 @@ public class AutoSpecimen extends LinearOpMode {
                 .strafeTo(new Vector2d(32+20, 63+40+10))
                 .strafeTo(new Vector2d(5, 63+40+10+8))
                 ;
+
+        TrajectoryActionBuilder spline = drive.actionBuilder(new Pose2d(32, 63, 0))
+                .splineTo(new Vector2d(32-15, 63+40), Math.toRadians(-90));
+
+
+
         TrajectoryActionBuilder sixthBuilder = drive.actionBuilder(new Pose2d(5, 63+40+10+8, Math.toRadians(180))).
         strafeTo(new Vector2d(5+8, 63+40+10+8-12)).strafeTo(new Vector2d(-5, 63+40+10+8-12));
         TrajectoryActionBuilder seventhBuilder = drive.actionBuilder(new Pose2d(0, 63+40+10+8-12, Math.toRadians(180))).
@@ -64,6 +79,8 @@ public class AutoSpecimen extends LinearOpMode {
         TrajectoryActionBuilder eighthBuilder = drive.actionBuilder(new Pose2d(32, 63, Math.toRadians(0))).
                 strafeTo(new Vector2d(5+8,63+40+10+8-12)).turnTo(Math.toRadians(180)).strafeTo(new Vector2d(-5,63+40+10+8-12));
         TrajectoryActionBuilder ninthBuilder = drive.actionBuilder(new Pose2d(0, 0, Math.toRadians(180))).strafeTo(new Vector2d(0,10));//.turnTo(0);//.strafeTo(new Vector2d(-36,36)); // 11 , -36
+        TrajectoryActionBuilder tenthBuilder = drive.actionBuilder(new Pose2d(0, 63+40+10+8-12, Math.toRadians(180))).
+                strafeToLinearHeading(new Vector2d(15,65),Math.toRadians(180)).turnTo(0).strafeTo(new Vector2d(42,70));
 
 
         waitForStart();
@@ -110,7 +127,7 @@ public class AutoSpecimen extends LinearOpMode {
         );
         Actions.runBlocking(
                 new ParallelAction(
-                        ninthBuilder.build(),
+                        tenthBuilder.build(),
                         elevatorVericalByState(ElevatorVerticalState.PUTSPECIMEN,false),
                         new SequentialAction(
                                 new SleepAction(4),elevatorVericalByState(ElevatorVerticalState.INTAKE, true)

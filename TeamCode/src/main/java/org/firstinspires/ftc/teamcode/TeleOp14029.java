@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Sensors.Gyro;
-import org.firstinspires.ftc.teamcode.Utils.Delay;
 import org.firstinspires.ftc.teamcode.Utils.GlobalData;
 import org.firstinspires.ftc.teamcode.Utils.Vector;
 import org.firstinspires.ftc.teamcode.robotSubSystems.Arm.Arm;
@@ -23,9 +22,7 @@ import org.firstinspires.ftc.teamcode.robotSubSystems.Wrist.WristState;
 
 @TeleOp(name = "TeleOp")
 public class TeleOp14029 extends OpMode {
-    SubSystemsState systemsState = SubSystemsState.TRAVEL;
     ElapsedTime elapsedTime = new ElapsedTime();
-    Delay delay = new Delay(1);
     boolean firstTimePressedleft_bumper;
     float left_bumperTimer = 0;
 

@@ -36,7 +36,7 @@ public class AutoSample extends LinearOpMode {
     ElevatorVerticalState lastelevatorVerticalState = ElevatorVerticalState.OFF;
 
     Pose2d redBasket = new Pose2d(-3,25 ,Math .toRadians(-45));
-    Pose2d sample1 = new Pose2d(-16/*-13*/, 27.5/*27*/,Math.toRadians(-13));
+    Pose2d sample1 = new Pose2d(-18/*-17.5*/, 27.5/*27*/,Math.toRadians(-13));
     Pose2d sample2 = new Pose2d(-13, 18/*18*/,Math.toRadians(0));
     Pose2d sample3 = new Pose2d(-14, 23,Math.toRadians(22));
     Pose2d startPos = new Pose2d(0, 0,Math.toRadians(0));
@@ -72,8 +72,12 @@ public class AutoSample extends LinearOpMode {
                 //.strafeTo(redBasket.position);
         TrajectoryActionBuilder sample2ToBasket = drive.actionBuilder(sample2)
                 .turnTo(redBasket.heading)
-                .strafeToLinearHeading(new Pose2d(-3.5,22 ,Math .toRadians(-45)).position,redBasket.heading);
+                .strafeToLinearHeading(new Pose2d(0,15 ,Math .toRadians(-55)).position,redBasket.heading);
                 //.strafeTo(redBasket.position);
+        TrajectoryActionBuilder endTurn = drive.actionBuilder(new Pose2d(0,18 ,Math .toRadians(-53)))
+                .strafeTo(new Pose2d(-2, -10, Math.toRadians(0)).position)
+                .turnTo(Math.toRadians(0));
+
         TrajectoryActionBuilder sample3ToBasket = drive.actionBuilder(sample3)
                 .turnTo(redBasket.heading)
                 .strafeTo(new Vector2d(-3,21)
@@ -96,35 +100,31 @@ public class AutoSample extends LinearOpMode {
                         , elevatorDeplete()
                 )
         );
+        Actions.runBlocking(
+                new SequentialAction(
+                        new ParallelAction(
+                                basketToSample1.build()
+                                , new SequentialAction(new SleepAction(0.5) , sampleIntake())
+                        )
+                        , sampleTransfer()
+                        , new ParallelAction(
+                            elevatorDepleteWithBack(backFromBasket)
+                            ,sample1ToBasket.build()
+                        )
+                )
+        );
 
         Actions.runBlocking(
                 new SequentialAction(
-                        basketToSample1.build()
-                        , sampleIntake()
-                )
-        );
-
-        Actions.runBlocking(
-                sampleTransfer()
-        );
-
-        Actions.runBlocking(
-                new ParallelAction(elevatorDepleteWithBack(backFromBasket)
-                        , sample1ToBasket.build()
-                )
-        );
-        Actions.runBlocking(
-                basketToSample2.build()
-        );
-        Actions.runBlocking(
-                sampleIntake()
-        );
-        Actions.runBlocking(
-                sampleTransfer()
-        );
-        Actions.runBlocking(
-                new ParallelAction(
-                        sample2ToBasket.build(), elevatorDeplete()
+                    new ParallelAction(
+                            basketToSample2.build()
+                            ,sampleIntake()
+                    )
+                   ,sampleTransfer()
+                   ,new ParallelAction(
+                        sample2ToBasket.build()
+                        ,elevatorDepleteWithBack(backFromBasket)
+                   )
                 )
         );
     }
@@ -173,8 +173,7 @@ public class AutoSample extends LinearOpMode {
                         armByState(ArmState.INTAKE),
                         wristAction(WristState.INTAKE),
                         intakeByState(IntakeState.IN)
-                ),
-               new SleepAction(0.9)
+                ), new SleepAction(0.9)
         );
     }
 
@@ -194,7 +193,7 @@ public class AutoSample extends LinearOpMode {
                                             intakeByState(IntakeState.OUT)
                                     )
                             ,new SequentialAction(
-                                    new SleepAction(0.2), intakeByState(IntakeState.OFF)
+                                    new SleepAction(0.1), intakeByState(IntakeState.OFF)
                             )
                             ,elevatorVericalByState(ElevatorVerticalState.OFF, true)
                         )
