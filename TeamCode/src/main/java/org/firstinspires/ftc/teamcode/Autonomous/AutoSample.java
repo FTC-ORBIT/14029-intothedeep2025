@@ -3,13 +3,17 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.AccelConstraint;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.ProfileAccelConstraint;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.VelConstraint;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -35,25 +39,27 @@ public class AutoSample extends LinearOpMode {
 
     ElevatorVerticalState lastelevatorVerticalState = ElevatorVerticalState.OFF;
 
-    Pose2d redBasket = new Pose2d(-3,25 ,Math .toRadians(-45));
-    Pose2d sample1 = new Pose2d(-18/*-17.5*/, 27.5/*27*/,Math.toRadians(-13));
-    Pose2d sample2 = new Pose2d(-13, 18/*18*/,Math.toRadians(0));
-    Pose2d sample3 = new Pose2d(-14, 23,Math.toRadians(22));
-    Pose2d startPos = new Pose2d(0, 0,Math.toRadians(0));
+    Pose2d redBasket = new Pose2d(-3, 25, Math.toRadians(-45));
+    Pose2d sample1 = new Pose2d(-18/*-17.5*/, 27.5/*27*/, Math.toRadians(-12.8));//-13
+    Pose2d sample2 = new Pose2d(-13, 18/*18*/, Math.toRadians(0));
+    Pose2d sample3 = new Pose2d(-40, 15, Math.toRadians(22));
+    Pose2d startPos = new Pose2d(0, 0, Math.toRadians(0));
 
     public ElevatorVerticalState robotVerticalElevatorState = ElevatorVerticalState.OFF;
     public ElevatorHorizonticalState robotHorizonticalElevatorState = ElevatorHorizonticalState.OFF;
     final double robotCenterToArm = 10;
+
     @Override
     public void runOpMode() throws InterruptedException {
-        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0,0,0));
+        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
         ElevatorVertical.init(hardwareMap);
         Arm.init(hardwareMap);
         Intake.init(hardwareMap);
         Wrist.init(hardwareMap);
         ElevatorHorizontical.init(hardwareMap);
 
-
+        VelConstraint velConstraint = new TranslationalVelConstraint(100);
+        AccelConstraint accelConstraint = new ProfileAccelConstraint(-53, 88);
         TrajectoryActionBuilder startToBasket = drive.actionBuilder(startPos)
                 .strafeTo(redBasket.position)
                 .turnTo(redBasket.heading);
@@ -62,32 +68,34 @@ public class AutoSample extends LinearOpMode {
                 .strafeTo(sample1.position);
         TrajectoryActionBuilder basketToSample2 = drive.actionBuilder(new Pose2d(-13, 16, redBasket.heading.toDouble()))
                 .turnTo(sample2.heading)
-                .strafeTo(new Vector2d(-23,18));
-        TrajectoryActionBuilder basketToSample3 = drive.actionBuilder(redBasket)
-                .turnTo(sample3.heading)
-                .strafeTo(sample3.position);
+                .strafeTo(new Vector2d(-23, 18));
         TrajectoryActionBuilder sample1ToBasket = drive.actionBuilder(sample1)
                 .turnTo(redBasket.heading)
-                .strafeToLinearHeading(new Pose2d(-9,12 ,Math.toRadians(-45)).position,redBasket.heading);
-                //.strafeTo(redBasket.position);
-        TrajectoryActionBuilder sample2ToBasket = drive.actionBuilder(sample2)
+                .strafeToLinearHeading(new Pose2d(-9, 12, Math.toRadians(-45)).position, redBasket.heading);
+        //.strafeTo(redBasket.position);
+        TrajectoryActionBuilder sample2ToBasket = drive.actionBuilder(new Pose2d(-23,18, Math.toRadians(0)))
                 .turnTo(redBasket.heading)
-                .strafeToLinearHeading(new Pose2d(0,15 ,Math .toRadians(-55)).position,redBasket.heading);
-                //.strafeTo(redBasket.position);
-        TrajectoryActionBuilder endTurn = drive.actionBuilder(new Pose2d(0,18 ,Math .toRadians(-53)))
+                .strafeTo(new Vector2d(-23, 4));
+        //.strafeTo(redBasket.position);
+        TrajectoryActionBuilder endTurn = drive.actionBuilder(new Pose2d(0, 18, Math.toRadians(-53)))
                 .strafeTo(new Pose2d(-2, -10, Math.toRadians(0)).position)
                 .turnTo(Math.toRadians(0));
 
         TrajectoryActionBuilder sample3ToBasket = drive.actionBuilder(sample3)
                 .turnTo(redBasket.heading)
-                .strafeTo(new Vector2d(-3,21)
+                .strafeTo(new Vector2d(-23, 4)
                 );
-        TrajectoryActionBuilder backFromBasket = drive.actionBuilder(new Pose2d(-9,12 ,Math.toRadians(-45)))
-                .strafeTo(new Vector2d(-13,16));
+        TrajectoryActionBuilder backFromBasket = drive.actionBuilder(new Pose2d(-9, 12, Math.toRadians(-45)))
+                .strafeTo(new Vector2d(-13, 14.5));
+        TrajectoryActionBuilder backFromBasket2 = drive.actionBuilder(new Pose2d(-23, 4, Math.toRadians(-45)))
+                .strafeTo(new Vector2d(-27, 7));
+
+        TrajectoryActionBuilder basketToSample3 = drive.actionBuilder(new Pose2d(-27, 7 , Math.toRadians(-45)))
+                .turnTo(sample3.heading.toDouble())
+                .strafeTo(sample3.position);
 
 
         waitForStart();
-
 
 
 //        Actions.runBlocking(actionBuilder.build());
@@ -95,39 +103,69 @@ public class AutoSample extends LinearOpMode {
 //        Actions.runBlocking(depleteAction()));
 //        Actions.runBlocking(new SequentialAction(sampleIntake(),sampleTransfer(),sampleDeplete()));
         Actions.runBlocking(
-                new ParallelAction(
-                        startToBasket.build()
-                        , elevatorDeplete()
-                )
-        );
-        Actions.runBlocking(
                 new SequentialAction(
+                    new SequentialAction(
                         new ParallelAction(
-                                basketToSample1.build()
-                                , new SequentialAction(new SleepAction(0.5) , sampleIntake())
-                        )
-                        , sampleTransfer()
-                        , new ParallelAction(
-                            elevatorDepleteWithBack(backFromBasket)
-                            ,sample1ToBasket.build()
-                        )
-                )
-        );
+                                    startToBasket.build()
+                                    , elevatorDeplete(),
+                            new SequentialAction( new SleepAction(2.75),
+                                new ParallelAction(
+                                        basketToSample1.build()
+                                        , new SequentialAction(new SleepAction(0.5), sampleIntake(), sampleTransfer())
+                                        , new SequentialAction(new SleepAction(5)
+                                            , new ParallelAction(
+                                                elevatorDepleteWithBack(backFromBasket)
+                                                , sample1ToBasket.build() //-------------------------------------------
+                                                , new SequentialAction( new SleepAction(3.2),
+                                                    new ParallelAction(
+                                                            basketToSample2.build()
+                                                            , new SequentialAction(new SleepAction(0.5), sampleIntake(), armByState(ArmState.INTAKE) ,sampleTransfer())
+                                                            , new SequentialAction(new SleepAction(5.5)
+                                                                ,new ParallelAction(
+                                                                    elevatorDepleteWithBack(backFromBasket2)
+                                                                    ,sample2ToBasket.build()
+                                                                ), new ParallelAction(
+                                                                        basketToSample3.build()
+                                                                        , new SequentialAction(new SleepAction(0.5), sampleIntake(), armByState(ArmState.INTAKE) ,sampleTransfer())
+                                                                        , new SequentialAction(new SleepAction(5.5)
+                                                                        ,new ParallelAction(
+                                                                            elevatorDepleteWithBack(backFromBasket2)
+                                                                            ,sample3ToBasket.build()
+                                                                        )
+                                                                    )
+                                                                )
+                                                            )
+                                                    )
+                                                )
 
-        Actions.runBlocking(
-                new SequentialAction(
-                    new ParallelAction(
-                            basketToSample2.build()
-                            ,sampleIntake()
+                                            )
+                                        )
+                                )
+                            )
+                        )
                     )
-                   ,sampleTransfer()
-                   ,new ParallelAction(
-                        sample2ToBasket.build()
-                        ,elevatorDepleteWithBack(backFromBasket)
-                   )
                 )
         );
+//        Actions.runBlocking(
+//                new SequentialAction(
+//                        new ParallelAction(
+//                                basketToSample3.build(),
+//                                new SequentialAction(
+//
+//                                        new SleepAction(2),
+//                                        sampleIntake()
+//                                )
+//
+//                        ),
+//                        sampleTransfer(),
+//                        new ParallelAction(
+//                                sample3ToBasket.build(),
+//                                elevatorDepleteWithBack(backFromBasket)
+//                        )
+//                )
+//        );
     }
+
 
 
     public Action elevatorDeplete() {
@@ -156,8 +194,8 @@ public class AutoSample extends LinearOpMode {
                                 new SleepAction(0.5),
                                 armByState(ArmState.DEPLETE),
                                 new ParallelAction(
-                                    armByState(ArmState.INTAKE),
-                                    back.build()
+                                        armByState(ArmState.INTAKE),
+                                        back.build()
                                 ),
                                 elevatorVericalByState(ElevatorVerticalState.INTAKE, true)
                         ),
@@ -166,10 +204,10 @@ public class AutoSample extends LinearOpMode {
         );
     }
 
-    public Action sampleIntake(){
-       return new SequentialAction(
+    public Action sampleIntake() {
+        return new SequentialAction(
                 new ParallelAction(
-                        elevatorHorizontalByState(ElevatorHorizonticalState.HALF,true),
+                        elevatorHorizontalByState(ElevatorHorizonticalState.HALF, true),
                         armByState(ArmState.INTAKE),
                         wristAction(WristState.INTAKE),
                         intakeByState(IntakeState.IN)
@@ -177,89 +215,92 @@ public class AutoSample extends LinearOpMode {
         );
     }
 
-    public Action sampleTransfer(){
+    public Action sampleTransfer() {
 
         return new ParallelAction(
-                        elevatorVericalByState(ElevatorVerticalState.INTAKE, false) ,
-                        armByState(ArmState.INTAKE),
-                        new SequentialAction(
-                            new ParallelAction(
+                elevatorVericalByState(ElevatorVerticalState.INTAKE, false),
+                armByState(ArmState.INTAKE),
+                new SequentialAction(
+                        new ParallelAction(
                                 wristAction(WristState.TRANSFER)
-                                ,intakeByState(IntakeState.OFF)
-                            )
-                            ,new SequentialAction(
-                                    elevatorHorizontalByState(ElevatorHorizonticalState.CLOSE,false)
-                                    ,new SequentialAction(
-                                            intakeByState(IntakeState.OUT)
-                                    )
-                            ,new SequentialAction(
-                                    new SleepAction(0.1), intakeByState(IntakeState.OFF)
-                            )
-                            ,elevatorVericalByState(ElevatorVerticalState.OFF, true)
+                                , intakeByState(IntakeState.OFF)
                         )
+                        , new ParallelAction(
+                            elevatorHorizontalByState(ElevatorHorizonticalState.CLOSE, false)
+                        , new SequentialAction(
+                            new SleepAction(0.5) ,intakeByState(IntakeState.OUT)
+                        )
+                        , new SequentialAction(
+                        new SleepAction(0.1), intakeByState(IntakeState.OFF)
+                )
+                        , elevatorVericalByState(ElevatorVerticalState.OFF, true)
+                )
 
-        ));
+                ));
     }
-    public Action elevatorVericalByState(final ElevatorVerticalState elevatorVerticalState, boolean stopAfterAction){
+
+    public Action elevatorVericalByState(final ElevatorVerticalState elevatorVerticalState, boolean stopAfterAction) {
         return new Action() {
             boolean initialized = false;
+
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 if (!initialized) {
                     lastelevatorVerticalState = elevatorVerticalState;
                     initialized = true;
                 }
-                ElevatorVertical.operate(elevatorVerticalState,0,0);
-                telemetryPacket.put("elevatorVerticalState",elevatorVerticalState);
-                telemetryPacket.put("lastElevatorVerticalState",lastelevatorVerticalState);
+                ElevatorVertical.operate(elevatorVerticalState, 0, 0);
+                telemetryPacket.put("elevatorVerticalState", elevatorVerticalState);
+                telemetryPacket.put("lastElevatorVerticalState", lastelevatorVerticalState);
                 telemetryPacket.put("elevator pos", ElevatorVertical.getElevatorPos());
                 telemetryPacket.put("wantedPos", ElevatorVertical.getWantedPos());
-                telemetryPacket.put("inPos",ElevatorVertical.inPos());
-                if (ElevatorVertical.getElevatorPos() > 200 && ElevatorVertical.getElevatorPos() < 2250) {
+                telemetryPacket.put("inPos", ElevatorVertical.inPos());
+                if (ElevatorVertical.getElevatorPos() > 400 && ElevatorVertical.getElevatorPos() < 2250) {
                     Arm.operate(ArmState.HALF);
                 }
-                if (elevatorVerticalState ==ElevatorVerticalState.OFF) {
+                if (elevatorVerticalState == ElevatorVerticalState.OFF) {
                     return false;
                 }
                 if (stopAfterAction) {
                     return !ElevatorVertical.inPos();
-                }else{
-                    return lastelevatorVerticalState==elevatorVerticalState;
+                } else {
+                    return lastelevatorVerticalState == elevatorVerticalState;
                 }
             }
         };
     }
 
-    public Action elevatorHorizontalByState(final ElevatorHorizonticalState elevatorHorizonticalState, boolean isOpening){
+    public Action elevatorHorizontalByState(final ElevatorHorizonticalState elevatorHorizonticalState, boolean isOpening) {
         return new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                ElevatorHorizontical.opreate(elevatorHorizonticalState,0, false);
-                telemetryPacket.put("elevatorHorizontalState",elevatorHorizonticalState);
+                ElevatorHorizontical.opreate(elevatorHorizonticalState, 0, false);
+                telemetryPacket.put("elevatorHorizontalState", elevatorHorizonticalState);
                 telemetryPacket.put("elevatorHpos", ElevatorHorizontical.getElevatorPos());
                 telemetryPacket.put("wantedHPos", ElevatorHorizontical.getWantedPos());
-                telemetryPacket.put("inPosH",ElevatorHorizontical.inPos());
+                telemetryPacket.put("inPosH", ElevatorHorizontical.inPos());
                 if (isOpening) {
                     return !ElevatorHorizontical.atLeastPose();
                 }
-                return  !ElevatorHorizontical.inPos();
+                return !ElevatorHorizontical.inPos();
             }
         };
     }
 
 
-    public Action armByState(ArmState armState){
+    public Action armByState(ArmState armState) {
         Action armAction = new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 Arm.operate(armState);
-                telemetryPacket.put("arm position",Arm.armServo.getPosition());
+                telemetryPacket.put("arm position", Arm.armServo.getPosition());
                 return false;
             }
 
         };
-        return new SequentialAction(armAction,new SleepAction(1));
+        return new SequentialAction(armAction, new SleepAction(1));
     }
+
     public Action wristByState(final WristState wristState) {
         return new Action() {
             @Override
@@ -287,11 +328,11 @@ public class AutoSample extends LinearOpMode {
 //    }
 
 
-    public Action intakeByState(IntakeState intakeState){
+    public Action intakeByState(IntakeState intakeState) {
         Action servoIntakeAction = new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                telemetryPacket.put("leftWrist",Intake.leftIntakeServo.getPosition());
+                telemetryPacket.put("leftWrist", Intake.leftIntakeServo.getPosition());
                 Intake.operate(intakeState);
                 if (intakeState == IntakeState.IN) {
                     return Intake.rightIntakeServo.getPosition() < Intake.POS_IN_RIGHT_INTAKE;
@@ -302,10 +343,11 @@ public class AutoSample extends LinearOpMode {
                 }
             }
         };
-        return new SequentialAction(servoIntakeAction , new SleepAction(1));
+        return new SequentialAction(servoIntakeAction, new SleepAction(1));
 
     }
-    public Action wristAction(WristState wristState){
+
+    public Action wristAction(WristState wristState) {
         Action servoWristAction = new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
@@ -320,35 +362,38 @@ public class AutoSample extends LinearOpMode {
                 }
             }
         };
-        return new SequentialAction(servoWristAction , new SleepAction(1));
+        return new SequentialAction(servoWristAction, new SleepAction(1));
 
     }
+
     public Action intake() {
         return new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                elevatorHorizontalByState(ElevatorHorizonticalState.HALF,true);
+                elevatorHorizontalByState(ElevatorHorizonticalState.HALF, true);
                 wristByState(WristState.INTAKE);
                 intakeByState(IntakeState.IN);
                 return Intake.leftIntakeServo.getPosition() <= Intake.POS_OUT_LEFT_INTAKE && Wrist.leftWristServo.getPosition() <= Wrist.POS_INTAKE_LEFT && !ElevatorHorizontical.inPos();
             }
         };
     }
-//
-    public Action driveAction(Pose2d start, Pose2d end, MecanumDrive drivetrain){
+
+    //
+    public Action driveAction(Pose2d start, Pose2d end, MecanumDrive drivetrain) {
         TrajectoryActionBuilder drive = drivetrain.actionBuilder(start)
                 .turnTo(end.heading)
-                .strafeToLinearHeading(end.position,end.heading);
+                .strafeToLinearHeading(end.position, end.heading);
         return drive.build();
 
     }
-    public void printCurrentPos(MecanumDrive drive){
+
+    public void printCurrentPos(MecanumDrive drive) {
         drive.updatePoseEstimate();
         telemetry.addData("x", drive.pose.position.x);
         telemetry.addData("y", drive.pose.position.y);
         telemetry.addData("heading (deg)", Math.toDegrees(drive.pose.heading.toDouble()));
         telemetry.update();
-        while(!gamepad1.a);
+        while (!gamepad1.a) ;
     }
 
 

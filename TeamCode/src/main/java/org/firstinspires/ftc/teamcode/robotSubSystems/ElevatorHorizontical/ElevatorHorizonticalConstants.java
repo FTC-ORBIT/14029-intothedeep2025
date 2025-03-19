@@ -4,7 +4,7 @@ public class ElevatorHorizonticalConstants {
     public static final float KpAuto = 0.85f;//0.8 //0.0080f
     public static final float KpTeleop = 0.008f;
     public static final float Ki = 0;
-    public static final float Kd = 0;
+    public static final float Kd = 0.000002f;
     public static final float Kf = 0;
     public static final float iZone = 0;
     public static final float maxSpeed = 0.7f;
