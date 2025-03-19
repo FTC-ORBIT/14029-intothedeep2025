@@ -173,7 +173,7 @@ public class AutoSample extends LinearOpMode {
                         armByState(ArmState.INTAKE),
                         wristAction(WristState.INTAKE),
                         intakeByState(IntakeState.IN)
-                ), new SleepAction(0.9)
+                ), new SleepAction(1)
         );
     }
 
@@ -199,10 +199,6 @@ public class AutoSample extends LinearOpMode {
                         )
 
         ));
-    }
-    public Action ArmDeplete() {
-        return new SequentialAction(
-                armByState(ArmState.DEPLETE), armByState(ArmState.INTAKE), wristByState(WristState.DEPLETE) , elevatorVericalByState(ElevatorVerticalState.INTAKE, true));
     }
     public Action elevatorVericalByState(final ElevatorVerticalState elevatorVerticalState, boolean stopAfterAction){
         return new Action() {
