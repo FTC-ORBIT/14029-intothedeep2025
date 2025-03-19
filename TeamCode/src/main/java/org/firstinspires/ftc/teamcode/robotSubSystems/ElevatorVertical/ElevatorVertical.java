@@ -54,7 +54,7 @@ public class ElevatorVertical {
                 }
                 lastWantedState = wantedState;
             }else {
-                wantedPos += (int) gamepadVal * 35;
+                wantedPos += (int) gamepadVal * 40;
             }
             /*
             if (wantedState != ElevatorVerticalState.INTAKE) {

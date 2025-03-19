@@ -41,8 +41,8 @@ public class AutoSample extends LinearOpMode {
 
     Pose2d redBasket = new Pose2d(-3, 25, Math.toRadians(-45));
     Pose2d sample1 = new Pose2d(-18/*-17.5*/, 27.5/*27*/, Math.toRadians(-12.8));//-13
-    Pose2d sample2 = new Pose2d(-13, 18/*18*/, Math.toRadians(0));
-    Pose2d sample3 = new Pose2d(-40, 15, Math.toRadians(22));
+    Pose2d sample2 = new Pose2d(-13, 18/*18*/, Math.toRadians(5));
+    Pose2d sample3 = new Pose2d(-42.5, 8, Math.toRadians(22));
     Pose2d startPos = new Pose2d(0, 0, Math.toRadians(0));
 
     public ElevatorVerticalState robotVerticalElevatorState = ElevatorVerticalState.OFF;
@@ -58,10 +58,10 @@ public class AutoSample extends LinearOpMode {
         Wrist.init(hardwareMap);
         ElevatorHorizontical.init(hardwareMap);
 
-        VelConstraint velConstraint = new TranslationalVelConstraint(100);
-        AccelConstraint accelConstraint = new ProfileAccelConstraint(-53, 88);
+        VelConstraint velConstraint = new TranslationalVelConstraint(90);
+        AccelConstraint accelConstraint = new ProfileAccelConstraint(-50, 70);
         TrajectoryActionBuilder startToBasket = drive.actionBuilder(startPos)
-                .strafeTo(redBasket.position)
+                .strafeTo(redBasket.position , velConstraint, accelConstraint)
                 .turnTo(redBasket.heading);
         TrajectoryActionBuilder basketToSample1 = drive.actionBuilder(redBasket)
                 .turnTo(sample1.heading)
@@ -83,12 +83,14 @@ public class AutoSample extends LinearOpMode {
 
         TrajectoryActionBuilder sample3ToBasket = drive.actionBuilder(sample3)
                 .turnTo(redBasket.heading)
-                .strafeTo(new Vector2d(-23, 4)
+                .strafeTo(new Vector2d(-5, 4), velConstraint,accelConstraint
                 );
         TrajectoryActionBuilder backFromBasket = drive.actionBuilder(new Pose2d(-9, 12, Math.toRadians(-45)))
                 .strafeTo(new Vector2d(-13, 14.5));
         TrajectoryActionBuilder backFromBasket2 = drive.actionBuilder(new Pose2d(-23, 4, Math.toRadians(-45)))
                 .strafeTo(new Vector2d(-27, 7));
+        TrajectoryActionBuilder backFromBasket3 = drive.actionBuilder(new Pose2d(-5, 4, Math.toRadians(-45)))
+                .strafeTo(new Vector2d(-5, 30));
 
         TrajectoryActionBuilder basketToSample3 = drive.actionBuilder(new Pose2d(-27, 7 , Math.toRadians(-45)))
                 .turnTo(sample3.heading.toDouble())
@@ -119,17 +121,17 @@ public class AutoSample extends LinearOpMode {
                                                 , new SequentialAction( new SleepAction(3.2),
                                                     new ParallelAction(
                                                             basketToSample2.build()
-                                                            , new SequentialAction(new SleepAction(0.5), sampleIntake(), armByState(ArmState.INTAKE) ,sampleTransfer())
-                                                            , new SequentialAction(new SleepAction(5.5)
+                                                            , new SequentialAction(new SleepAction(0.4), sampleIntake(),sampleTransfer(),  armByState(ArmState.INTAKE) )
+                                                            , new SequentialAction(new SleepAction(5.2)
                                                                 ,new ParallelAction(
                                                                     elevatorDepleteWithBack(backFromBasket2)
                                                                     ,sample2ToBasket.build()
                                                                 ), new ParallelAction(
                                                                         basketToSample3.build()
-                                                                        , new SequentialAction(new SleepAction(0.5), sampleIntake(), armByState(ArmState.INTAKE) ,sampleTransfer())
-                                                                        , new SequentialAction(new SleepAction(5.5)
+                                                                        , new SequentialAction(new SleepAction(0.4), sampleIntake(), armByState(ArmState.INTAKE) ,sampleTransfer())
+                                                                        , new SequentialAction(new SleepAction(5.6)
                                                                         ,new ParallelAction(
-                                                                            elevatorDepleteWithBack(backFromBasket2)
+                                                                            elevatorDepleteWithBack(backFromBasket3)
                                                                             ,sample3ToBasket.build()
                                                                         )
                                                                     )
@@ -146,24 +148,6 @@ public class AutoSample extends LinearOpMode {
                     )
                 )
         );
-//        Actions.runBlocking(
-//                new SequentialAction(
-//                        new ParallelAction(
-//                                basketToSample3.build(),
-//                                new SequentialAction(
-//
-//                                        new SleepAction(2),
-//                                        sampleIntake()
-//                                )
-//
-//                        ),
-//                        sampleTransfer(),
-//                        new ParallelAction(
-//                                sample3ToBasket.build(),
-//                                elevatorDepleteWithBack(backFromBasket)
-//                        )
-//                )
-//        );
     }
 
 
@@ -174,7 +158,7 @@ public class AutoSample extends LinearOpMode {
                 new ParallelAction(
                         elevatorVericalByState(ElevatorVerticalState.DEPLETE, false),
                         new SequentialAction(
-                                new SleepAction(0.5),
+                                new SleepAction(0.4),
                                 armByState(ArmState.DEPLETE),
                                 armByState(ArmState.INTAKE),
 
@@ -191,7 +175,7 @@ public class AutoSample extends LinearOpMode {
                 new ParallelAction(
                         elevatorVericalByState(ElevatorVerticalState.DEPLETE, false),
                         new SequentialAction(
-                                new SleepAction(0.5),
+                                new SleepAction(0.4),
                                 armByState(ArmState.DEPLETE),
                                 new ParallelAction(
                                         armByState(ArmState.INTAKE),
@@ -211,7 +195,7 @@ public class AutoSample extends LinearOpMode {
                         armByState(ArmState.INTAKE),
                         wristAction(WristState.INTAKE),
                         intakeByState(IntakeState.IN)
-                ), new SleepAction(1)
+                ), new SleepAction(0.8)
         );
     }
 
