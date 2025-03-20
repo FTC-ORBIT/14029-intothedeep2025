@@ -30,7 +30,6 @@ public class ElevatorVertical {
         leftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         leftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        resetEncoder();
     }
     private static double power = 0;
     public static ElevatorVerticalState lastWantedState = ElevatorVerticalState.OFF;

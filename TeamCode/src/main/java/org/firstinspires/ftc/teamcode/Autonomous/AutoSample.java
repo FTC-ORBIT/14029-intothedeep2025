@@ -148,6 +148,7 @@ public class AutoSample extends LinearOpMode {
                     )
                 )
         );
+        AngleStorage.angle = (float) Math.toDegrees(drive.pose.heading.toDouble());
     }
 
 

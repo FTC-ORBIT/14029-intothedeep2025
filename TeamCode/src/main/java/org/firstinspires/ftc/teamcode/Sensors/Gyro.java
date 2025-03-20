@@ -1,15 +1,12 @@
 package org.firstinspires.ftc.teamcode.Sensors;
 
 import com.qualcomm.hardware.bosch.BHI260IMU;
-import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 public class Gyro {
     public static BHI260IMU imu;
@@ -41,6 +38,9 @@ public class Gyro {
 
     }
 
+    public static void resetGyroForTeleop(final float lastAutoAngle){
+        resetAngle = lastAutoAngle;
+    }
     public static void resetGyro(){
         resetAngle = imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
     }

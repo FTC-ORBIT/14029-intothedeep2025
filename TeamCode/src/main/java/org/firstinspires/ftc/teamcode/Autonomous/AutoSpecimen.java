@@ -135,6 +135,7 @@ public class AutoSpecimen extends LinearOpMode {
                                     new SleepAction(5),elevatorVericalByState(ElevatorVerticalState.INTAKE, true)
                             )
                     )), new SequentialAction(new SleepAction(29), elevatorPower(false))));
+    AngleStorage.angle = (float) Math.toDegrees(drive.pose.heading.toDouble() + Math.PI) ;
     }
     public Action elevatorVericalByState(final ElevatorVerticalState elevatorVerticalState, boolean stopAfterAction) {
         return new Action() {
